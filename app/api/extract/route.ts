@@ -8,22 +8,32 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
-  const { url, anthropicKey } = await request.json();
+  const { url, transcript: manualTranscript, anthropicKey } = await request.json();
 
-  if (!url) return NextResponse.json({ success: false, error: "URL obrigatória" }, { status: 400 });
+  if (!url && !manualTranscript) {
+    return NextResponse.json({ success: false, error: "URL ou transcript obrigatório" }, { status: 400 });
+  }
 
-  const videoId = extractVideoId(url);
-  if (!videoId) return NextResponse.json({ success: false, error: "URL do YouTube inválida" }, { status: 400 });
+  const videoId = url ? extractVideoId(url) : null;
 
   try {
-    const { transcript, title } = await getTranscript(url);
+    let transcript: string;
+    let title = "";
+
+    if (manualTranscript?.trim()) {
+      transcript = manualTranscript.trim();
+    } else {
+      const result = await getTranscript(url);
+      transcript = result.transcript;
+      title = result.title;
+    }
 
     const job: ProjectJob = {
       id: uuidv4(),
-      youtubeUrl: url,
-      videoId,
-      videoTitle: title || "Vídeo do YouTube",
-      thumbnail: getVideoThumbnail(videoId),
+      youtubeUrl: url || "",
+      videoId: videoId || undefined,
+      videoTitle: title || "Conteúdo do Vídeo",
+      thumbnail: videoId ? getVideoThumbnail(videoId) : undefined,
       transcript,
       anthropicKey: anthropicKey || undefined,
       status: "pending",
