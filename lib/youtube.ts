@@ -147,7 +147,7 @@ async function fetchTranscriptHTML(videoId: string): Promise<string> {
   const patterns = [
     /"captionTracks"\s*:\s*(\[[\s\S]*?\])\s*,\s*"audioTracks"/,
     /"captionTracks"\s*:\s*(\[[\s\S]*?\]),\s*"/,
-    /captionTracks":(\[.*?\])/s,
+    /captionTracks":([\s\S]*?\][\s\S]*?\])/,
   ];
 
   let captionTracks: Array<{ languageCode?: string; baseUrl?: string; kind?: string }> | null = null;
