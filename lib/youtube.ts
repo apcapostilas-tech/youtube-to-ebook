@@ -51,9 +51,12 @@ async function fetchViaYtdl(videoId: string): Promise<string> {
   return fetchCaptionUrl(`${track.baseUrl}&fmt=json3`);
 }
 
-// Method 2: InnerTube WEB client
-async function fetchViaInnerTube(videoId: string): Promise<string> {
-  const res = await fetch("https://www.youtube.com/youtubei/v1/player", {
+// Method 2: InnerTube WEB client with optional API key (key makes request more trusted)
+async function fetchViaInnerTube(videoId: string, apiKey?: string): Promise<string> {
+  const endpoint = apiKey
+    ? `https://www.youtube.com/youtubei/v1/player?key=${apiKey}`
+    : "https://www.youtube.com/youtubei/v1/player";
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -86,9 +89,12 @@ async function fetchViaInnerTube(videoId: string): Promise<string> {
   return fetchCaptionUrl(`${track.baseUrl}&fmt=json3`);
 }
 
-// Method 3: InnerTube TV client
-async function fetchViaTV(videoId: string): Promise<string> {
-  const res = await fetch("https://www.youtube.com/youtubei/v1/player", {
+// Method 3: InnerTube TV client with optional API key
+async function fetchViaTV(videoId: string, apiKey?: string): Promise<string> {
+  const endpoint = apiKey
+    ? `https://www.youtube.com/youtubei/v1/player?key=${apiKey}`
+    : "https://www.youtube.com/youtubei/v1/player";
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -122,15 +128,16 @@ async function fetchViaLibrary(videoId: string): Promise<string> {
 }
 
 export async function getTranscript(
-  url: string
+  url: string,
+  youtubeApiKey?: string
 ): Promise<{ transcript: string; title: string }> {
   const videoId = extractVideoId(url);
   if (!videoId) throw new Error("URL do YouTube inválida");
 
   const methods = [
     { name: "ytdl-core", fn: () => fetchViaYtdl(videoId) },
-    { name: "InnerTube WEB", fn: () => fetchViaInnerTube(videoId) },
-    { name: "InnerTube TV", fn: () => fetchViaTV(videoId) },
+    { name: "InnerTube WEB" + (youtubeApiKey ? " (com API key)" : ""), fn: () => fetchViaInnerTube(videoId, youtubeApiKey) },
+    { name: "InnerTube TV" + (youtubeApiKey ? " (com API key)" : ""), fn: () => fetchViaTV(videoId, youtubeApiKey) },
     { name: "youtube-transcript", fn: () => fetchViaLibrary(videoId) },
   ];
 

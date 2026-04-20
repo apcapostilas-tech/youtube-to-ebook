@@ -45,6 +45,7 @@ export interface ProjectJob {
   thumbnail?: string;
   transcript?: string;
   anthropicKey?: string;
+  youtubeApiKey?: string;
   language?: string;
   ebook?: EbookData;
   salesPage?: SalesPageData;

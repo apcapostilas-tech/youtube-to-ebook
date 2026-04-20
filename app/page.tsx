@@ -12,6 +12,8 @@ export default function HomePage() {
   const [manualTranscript, setManualTranscript] = useState("");
   const [showManual, setShowManual] = useState(false);
   const [language, setLanguage] = useState("pt-BR");
+  const [youtubeKey, setYoutubeKey] = useState("");
+  const [showYtKey, setShowYtKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [step, setStep] = useState<"idle" | "extracting" | "generating">("idle");
@@ -31,6 +33,7 @@ export default function HomePage() {
           url: url || "https://youtube.com",
           transcript: manualTranscript || undefined,
           anthropicKey: apiKey || undefined,
+          youtubeApiKey: youtubeKey || undefined,
           language,
         }),
       });
@@ -165,14 +168,34 @@ export default function HomePage() {
             </select>
           </div>
 
-          {/* API Key */}
+          {/* YouTube API Key */}
+          <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-xl px-4 py-3">
+            <span className="text-red-400/60 text-xs flex-shrink-0">▶</span>
+            <input
+              type={showYtKey ? "text" : "password"}
+              value={youtubeKey}
+              onChange={(e) => setYoutubeKey(e.target.value)}
+              placeholder="YouTube Data API Key (opcional — melhora extração)"
+              className="flex-1 bg-transparent text-white/70 placeholder-white/20 outline-none text-xs"
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowYtKey(!showYtKey)}
+              className="text-white/20 hover:text-white/50 text-xs transition-colors cursor-pointer"
+            >
+              {showYtKey ? "ocultar" : "mostrar"}
+            </button>
+          </div>
+
+          {/* Anthropic API Key */}
           <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-xl px-4 py-3">
             <Key size={14} className="text-white/30 flex-shrink-0" />
             <input
               type={showKey ? "text" : "password"}
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Sua Anthropic API Key (opcional)"
+              placeholder="Anthropic API Key (opcional)"
               className="flex-1 bg-transparent text-white/70 placeholder-white/20 outline-none text-xs"
               disabled={loading}
             />

@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
-  const { url, transcript: manualTranscript, anthropicKey, language } = await request.json();
+  const { url, transcript: manualTranscript, anthropicKey, youtubeApiKey, language } = await request.json();
 
   if (!url && !manualTranscript) {
     return NextResponse.json({ success: false, error: "URL ou transcript obrigatório" }, { status: 400 });
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (manualTranscript?.trim()) {
       transcript = manualTranscript.trim();
     } else {
-      const result = await getTranscript(url);
+      const result = await getTranscript(url, youtubeApiKey || undefined);
       transcript = result.transcript;
       title = result.title;
     }
@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
       thumbnail: videoId ? getVideoThumbnail(videoId) : undefined,
       transcript,
       anthropicKey: anthropicKey || undefined,
+      youtubeApiKey: youtubeApiKey || undefined,
       language: language || "pt-BR",
       status: "pending",
       createdAt: Date.now(),
