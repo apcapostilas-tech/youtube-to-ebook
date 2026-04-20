@@ -146,7 +146,8 @@ export default function HomePage() {
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
               disabled={loading}
-              className="flex-1 bg-transparent text-white/70 outline-none text-sm cursor-pointer"
+              className="flex-1 outline-none text-sm cursor-pointer"
+              style={{ background: "#0a0a0f", color: "rgba(255,255,255,0.7)", colorScheme: "dark" }}
             >
               <option value="pt-BR">🇧🇷 Português (Brasil)</option>
               <option value="en">🇺🇸 English</option>
