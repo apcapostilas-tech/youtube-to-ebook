@@ -14,10 +14,14 @@ export default function ResultPage() {
   const [savingCheckout, setSavingCheckout] = useState(false);
   const [checkoutSaved, setCheckoutSaved] = useState(false);
   const [generatingImages, setGeneratingImages] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   const salesPageUrl = typeof window !== "undefined"
     ? `${window.location.origin}/sales/${id}`
     : `/sales/${id}`;
+  const ebookPageUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/ebook/${id}`
+    : `/ebook/${id}`;
 
   useEffect(() => {
     fetch(`/api/status/${id}`).then((r) => r.json()).then((d) => {
@@ -42,15 +46,23 @@ export default function ResultPage() {
 
   const generateImages = async () => {
     setGeneratingImages(true);
-    const res = await fetch("/api/generate-ad-images", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jobId: id }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      const updated = await fetch(`/api/status/${id}`).then((r) => r.json());
-      if (updated.success) setJob(updated.data);
+    setImageError("");
+    try {
+      const res = await fetch("/api/generate-ad-images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId: id }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setImageError(data.error || "Erro ao gerar imagens");
+      } else {
+        if (data.data?.errors?.length) setImageError(`Avisos: ${data.data.errors.join("; ")}`);
+        const updated = await fetch(`/api/status/${id}`).then((r) => r.json());
+        if (updated.success) setJob(updated.data);
+      }
+    } catch (e) {
+      setImageError("Falha de conexão ao gerar imagens");
     }
     setGeneratingImages(false);
   };
@@ -83,21 +95,37 @@ export default function ResultPage() {
           <h1 className="text-3xl font-black mb-2">{ebook.title}</h1>
           <p className="text-white/50 mb-6">{ebook.subtitle}</p>
 
-          {/* Link da página de vendas */}
-          <div className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
+          {/* Links */}
+          <div className="flex flex-wrap gap-3 max-w-2xl mx-auto justify-center">
             <a
-              href={salesPageUrl}
+              href={ebookPageUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity"
             >
-              <ExternalLink size={14} /> Ver Página de Vendas
+              <BookOpen size={14} /> Ver Ebook
+            </a>
+            <a
+              href={`/api/ebook-pdf/${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors"
+            >
+              ⬇ Baixar PDF
+            </a>
+            <a
+              href={salesPageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors"
+            >
+              <ExternalLink size={14} /> Página de Vendas
             </a>
             <button
               onClick={() => { navigator.clipboard.writeText(salesPageUrl); }}
               className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors cursor-pointer"
             >
-              <Link size={14} /> Copiar Link
+              <Link size={14} /> Copiar Link Vendas
             </button>
           </div>
         </div>
@@ -247,6 +275,11 @@ export default function ResultPage() {
         {/* ADS TAB */}
         {tab === "ads" && adCreatives && (
           <div className="pb-16">
+            {imageError && (
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
+                {imageError}
+              </div>
+            )}
             <div className="flex items-center justify-between mb-6">
               <p className="text-white/40 text-sm">{adCreatives.filter(a => a.imageUrl).length}/{adCreatives.length} imagens geradas</p>
               <button
