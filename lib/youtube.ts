@@ -4,13 +4,27 @@ export async function getTranscript(url: string): Promise<{ transcript: string; 
   const videoId = extractVideoId(url);
   if (!videoId) throw new Error("URL do YouTube inválida");
 
-  try {
-    const items = await YoutubeTranscript.fetchTranscript(videoId);
-    const transcript = items.map((i) => i.text).join(" ").replace(/\s+/g, " ").trim();
-    return { transcript, title: "" };
-  } catch {
-    throw new Error("Não foi possível extrair a transcrição. Verifique se o vídeo tem legendas ativadas.");
+  const langs = ["pt", "pt-BR", "es", "en", ""];
+
+  let lastError: unknown;
+
+  for (const lang of langs) {
+    try {
+      const opts = lang ? { lang } : undefined;
+      const items = await YoutubeTranscript.fetchTranscript(videoId, opts);
+      if (items && items.length > 0) {
+        const transcript = items.map((i) => i.text).join(" ").replace(/\s+/g, " ").trim();
+        return { transcript, title: "" };
+      }
+    } catch (err) {
+      lastError = err;
+      continue;
+    }
   }
+
+  const msg = lastError instanceof Error ? lastError.message : String(lastError);
+  console.error("youtube-transcript error:", msg);
+  throw new Error(`Não foi possível extrair a transcrição (${msg}). Certifique-se que o vídeo tem legendas ativadas e é público.`);
 }
 
 export function extractVideoId(url: string): string | null {
