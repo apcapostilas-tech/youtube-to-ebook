@@ -34,7 +34,10 @@ export default function HomePage() {
           language,
         }),
       });
-      const extractData = await extractRes.json();
+      const extractText = await extractRes.text();
+      let extractData: { success: boolean; error?: string; data?: { jobId: string } };
+      try { extractData = JSON.parse(extractText); }
+      catch { throw new Error(`Servidor indisponível. Aguarde e tente novamente.`); }
       if (!extractData.success) throw new Error(extractData.error);
 
       setStep("generating");
@@ -42,9 +45,12 @@ export default function HomePage() {
       const genRes = await fetch("/api/generate-ebook", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId: extractData.data.jobId }),
+        body: JSON.stringify({ jobId: extractData.data!.jobId }),
       });
-      const genData = await genRes.json();
+      const genText = await genRes.text();
+      let genData: { success: boolean; error?: string };
+      try { genData = JSON.parse(genText); }
+      catch { throw new Error(`Erro ao gerar conteúdo. Tente novamente em instantes.`); }
       if (!genData.success) throw new Error(genData.error);
 
       router.push(`/result/${extractData.data.jobId}`);
