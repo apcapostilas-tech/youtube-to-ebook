@@ -18,14 +18,15 @@ export async function POST(request: NextRequest) {
     saveJob(job);
 
     const apiKey = job.anthropicKey;
+    const lang = job.language || "pt-BR";
 
-    job.ebook = await generateEbook(job.transcript, job.videoTitle || "", apiKey);
+    job.ebook = await generateEbook(job.transcript, job.videoTitle || "", apiKey, lang);
     saveJob(job);
 
-    job.salesPage = await generateSalesPage(job.ebook, apiKey);
+    job.salesPage = await generateSalesPage(job.ebook, apiKey, lang);
     saveJob(job);
 
-    job.adCreatives = await generateAdCreatives(job.ebook, job.salesPage, apiKey);
+    job.adCreatives = await generateAdCreatives(job.ebook, job.salesPage, apiKey, lang);
 
     job.status = "done";
     saveJob(job);

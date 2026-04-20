@@ -1,6 +1,11 @@
 export async function generateImage(prompt: string): Promise<string> {
   const apiKey = process.env.WAVESPEED_API_KEY;
-  if (!apiKey) throw new Error("WAVESPEED_API_KEY não configurada");
+
+  // Free fallback via Pollinations.ai (no API key needed)
+  if (!apiKey) {
+    const encoded = encodeURIComponent(prompt);
+    return `https://image.pollinations.ai/prompt/${encoded}?width=576&height=1024&nologo=true&seed=${Math.floor(Math.random() * 9999)}`;
+  }
 
   const res = await fetch("https://api.wavespeed.ai/api/v3/wavespeed-ai/z-image/turbo", {
     method: "POST",

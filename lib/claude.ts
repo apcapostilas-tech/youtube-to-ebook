@@ -26,18 +26,31 @@ function getClient(apiKey?: string) {
   return new Anthropic({ apiKey: key });
 }
 
+const LANG_INSTRUCTION: Record<string, string> = {
+  "pt-BR": "Escreva TODO o conteúdo em Português do Brasil.",
+  "en": "Write ALL content in English.",
+  "es": "Escribe TODO el contenido en Español.",
+  "fr": "Rédigez TOUT le contenu en Français.",
+  "de": "Schreiben Sie ALLE Inhalte auf Deutsch.",
+  "it": "Scrivi TUTTO il contenuto in Italiano.",
+  "ja": "すべてのコンテンツを日本語で書いてください。",
+};
+
 export async function generateEbook(
   transcript: string,
   videoTitle: string,
-  apiKey?: string
+  apiKey?: string,
+  language = "pt-BR"
 ): Promise<EbookData> {
   const client = getClient(apiKey);
+  const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 8000,
     system: `Você é um especialista em transformar conteúdo de vídeos em ebooks de alto valor.
 Crie ebooks estruturados, envolventes e práticos que gerem transformação real no leitor.
+${langInstr}
 Responda APENAS com JSON válido, sem markdown, sem explicações.`,
     messages: [
       {
@@ -78,9 +91,11 @@ Crie 4 capítulos completos. Cada capítulo deve ter profundidade real — extra
 
 export async function generateSalesPage(
   ebook: EbookData,
-  apiKey?: string
+  apiKey?: string,
+  language = "pt-BR"
 ): Promise<SalesPageData> {
   const client = getClient(apiKey);
+  const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
@@ -88,6 +103,7 @@ export async function generateSalesPage(
     system: `Você é um copywriter especialista em páginas de vendas de alto impacto.
 Use os frameworks: PAS (Problema-Agitação-Solução), AIDA e prova social.
 Escreva copy direto, específico e que gere urgência real. Sem clichês.
+${langInstr}
 Responda APENAS com JSON válido.`,
     messages: [
       {
@@ -128,15 +144,18 @@ Retorne JSON com esta estrutura:
 export async function generateAdCreatives(
   ebook: EbookData,
   salesPage: SalesPageData,
-  apiKey?: string
+  apiKey?: string,
+  language = "pt-BR"
 ): Promise<AdCreative[]> {
   const client = getClient(apiKey);
+  const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 2000,
     system: `Você é especialista em criação de anúncios para Meta Ads (Facebook e Instagram).
 Crie anúncios que param o scroll, geram curiosidade e convertem.
+${langInstr}
 Responda APENAS com JSON válido.`,
     messages: [
       {

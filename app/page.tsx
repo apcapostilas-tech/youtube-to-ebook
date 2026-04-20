@@ -11,6 +11,7 @@ export default function HomePage() {
   const [showKey, setShowKey] = useState(false);
   const [manualTranscript, setManualTranscript] = useState("");
   const [showManual, setShowManual] = useState(false);
+  const [language, setLanguage] = useState("pt-BR");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [step, setStep] = useState<"idle" | "extracting" | "generating">("idle");
@@ -30,6 +31,7 @@ export default function HomePage() {
           url: url || "https://youtube.com",
           transcript: manualTranscript || undefined,
           anthropicKey: apiKey || undefined,
+          language,
         }),
       });
       const extractData = await extractRes.json();
@@ -135,6 +137,25 @@ export default function HomePage() {
                 className="w-full bg-white/3 px-4 py-3 text-sm text-white/70 placeholder-white/20 outline-none resize-none border-t border-white/5"
               />
             )}
+          </div>
+
+          {/* Idioma */}
+          <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-xl px-4 py-3">
+            <span className="text-white/30 text-sm flex-shrink-0">🌐 Idioma:</span>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              disabled={loading}
+              className="flex-1 bg-transparent text-white/70 outline-none text-sm cursor-pointer"
+            >
+              <option value="pt-BR">🇧🇷 Português (Brasil)</option>
+              <option value="en">🇺🇸 English</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              <option value="it">🇮🇹 Italiano</option>
+              <option value="ja">🇯🇵 日本語</option>
+            </select>
           </div>
 
           {/* API Key */}

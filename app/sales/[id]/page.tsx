@@ -40,8 +40,14 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           @keyframes spin { to { transform:rotate(360deg); } }
           @keyframes countUp { from { opacity:0; transform:scale(.5); } to { opacity:1; transform:scale(1); } }
 
-          .reveal { opacity:0; transform:translateY(30px); transition:opacity .7s ease, transform .7s ease; }
-          .reveal.visible { opacity:1; transform:translateY(0); }
+          @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+          .section-anim { animation: slideUp .7s ease both; }
+          section:nth-of-type(1) .section-anim { animation-delay:.1s; }
+          section:nth-of-type(2) .section-anim { animation-delay:.2s; }
+          section:nth-of-type(3) .section-anim { animation-delay:.3s; }
+          section:nth-of-type(4) .section-anim { animation-delay:.4s; }
+          section:nth-of-type(5) .section-anim { animation-delay:.5s; }
+          section:nth-of-type(6) .section-anim { animation-delay:.6s; }
 
           /* ---- HERO ---- */
           .hero {

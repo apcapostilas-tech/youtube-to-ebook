@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
-  const { url, transcript: manualTranscript, anthropicKey } = await request.json();
+  const { url, transcript: manualTranscript, anthropicKey, language } = await request.json();
 
   if (!url && !manualTranscript) {
     return NextResponse.json({ success: false, error: "URL ou transcript obrigatório" }, { status: 400 });
@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
       thumbnail: videoId ? getVideoThumbnail(videoId) : undefined,
       transcript,
       anthropicKey: anthropicKey || undefined,
+      language: language || "pt-BR",
       status: "pending",
       createdAt: Date.now(),
     };
