@@ -48,6 +48,7 @@ export interface ProjectJob {
   ebook?: EbookData;
   salesPage?: SalesPageData;
   adCreatives?: AdCreative[];
+  checkoutUrl?: string;
   pdfUrl?: string;
   salesPageUrl?: string;
   status: "pending" | "extracting" | "generating" | "done" | "error";

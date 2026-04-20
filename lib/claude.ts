@@ -42,32 +42,32 @@ Responda APENAS com JSON válido, sem markdown, sem explicações.`,
     messages: [
       {
         role: "user",
-        content: `Transforme esta transcrição em um ebook. Seja BREVE e direto.
+        content: `Transforme esta transcrição em um ebook profissional e completo.
 
 Título do vídeo: "${videoTitle}"
 
 Transcrição:
-${transcript.slice(0, 5000)}
+${transcript.slice(0, 6000)}
 
-Retorne JSON EXATO (sem texto fora do JSON):
+Retorne APENAS JSON válido (sem texto fora):
 {
-  "title": "título do ebook (máx 8 palavras)",
-  "subtitle": "subtítulo (máx 12 palavras)",
+  "title": "título impactante do ebook",
+  "subtitle": "subtítulo que promete resultado específico",
   "author": "Autor",
-  "description": "descrição em 2 frases curtas",
+  "description": "3 frases descrevendo o que o leitor vai aprender e transformar",
   "chapters": [
     {
-      "title": "título curto",
-      "content": "1 parágrafo de 3 frases",
-      "keyPoints": ["ponto 1", "ponto 2"],
-      "quote": ""
+      "title": "título do capítulo",
+      "content": "3 parágrafos completos com ensinamentos práticos extraídos do vídeo. Seja específico, cite exemplos, explique o raciocínio por trás de cada passo.",
+      "keyPoints": ["ponto prático 1", "ponto prático 2", "ponto prático 3", "ponto prático 4"],
+      "quote": "frase marcante ou insight poderoso deste capítulo"
     }
   ],
-  "conclusion": "conclusão em 2 frases",
-  "callToAction": "CTA em 1 frase"
+  "conclusion": "3 frases de conclusão poderosa com call to action implícito",
+  "callToAction": "chamada para ação direta e urgente"
 }
 
-IMPORTANTE: máximo 3 capítulos. Cada campo deve ser CURTO. JSON deve ter menos de 2000 tokens.`,
+Crie 4 capítulos completos. Cada capítulo deve ter profundidade real — extraia os melhores insights do vídeo.`,
       },
     ],
   });
