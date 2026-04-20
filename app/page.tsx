@@ -41,14 +41,15 @@ export default function HomePage() {
       let extractData: { success: boolean; error?: string; data?: { jobId: string } };
       try { extractData = JSON.parse(extractText); }
       catch { throw new Error(`Servidor indisponível. Aguarde e tente novamente.`); }
-      if (!extractData.success) throw new Error(extractData.error);
+      if (!extractData.success || !extractData.data?.jobId) throw new Error(extractData.error || "Job ID não retornado");
+      const jobId = extractData.data.jobId;
 
       setStep("generating");
 
       const genRes = await fetch("/api/generate-ebook", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId: extractData.data!.jobId }),
+        body: JSON.stringify({ jobId }),
       });
       const genText = await genRes.text();
       let genData: { success: boolean; error?: string };
@@ -56,7 +57,7 @@ export default function HomePage() {
       catch { throw new Error(`Erro ao gerar conteúdo. Tente novamente em instantes.`); }
       if (!genData.success) throw new Error(genData.error);
 
-      router.push(`/result/${extractData.data.jobId}`);
+      router.push(`/result/${jobId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro inesperado");
       setStep("idle");
