@@ -22,16 +22,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const page = await browser.newPage();
     await page.goto(ebookUrl, { waitUntil: "networkidle0", timeout: 30000 });
 
-    const pdf = await page.pdf({
+    const pdfData = await page.pdf({
       format: "A4",
       printBackground: true,
       margin: { top: "20mm", bottom: "20mm", left: "20mm", right: "20mm" },
     });
 
-    return new NextResponse(pdf, {
+    const filename = job.ebook.title.replace(/[^a-z0-9]/gi, "_") + ".pdf";
+    return new NextResponse(Buffer.from(pdfData), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${job.ebook.title.replace(/[^a-z0-9]/gi, "_")}.pdf"`,
+        "Content-Disposition": `attachment; filename="${filename}"`,
       },
     });
   } finally {
