@@ -37,6 +37,20 @@ function getThemeCSS(theme: string): string {
     .faq details p{color:#4040a0!important}
     .final{background:linear-gradient(180deg,transparent,rgba(99,102,241,.05))!important}
     footer{border-color:#e2e2f0!important;color:#8080c0!important}
+    .donut-section{background:radial-gradient(ellipse at 50% 50%,rgba(99,102,241,.04) 0%,transparent 70%)!important}
+    .donut-pct{background:linear-gradient(135deg,#1e1e3f,#6366f1)!important;-webkit-background-clip:text!important;background-clip:text!important}
+    .donut-label{color:#8080c0!important}
+    .donut-item{background:#ffffff!important;border-color:#e2e2f0!important}
+    .donut-item-num{background:linear-gradient(135deg,#1e1e3f,#6366f1)!important;-webkit-background-clip:text!important;background-clip:text!important}
+    .donut-item-label{color:#8080c0!important}
+    .stat{border-color:#e2e2f0!important;background:linear-gradient(135deg,rgba(99,102,241,.03),rgba(99,102,241,.01))!important}
+    .stat::before{background:linear-gradient(90deg,transparent,#6366f1,#8b5cf6,transparent)!important}
+    .prog-pct{background:linear-gradient(135deg,#6366f1,#8b5cf6)!important}
+    .offer-item-name{color:#1e1e3f!important}
+    .offer-item-price{color:#8080c0!important}
+    .price-original{color:#8080c0!important}
+    .guarantee-box{background:rgba(16,185,129,.06)!important;border-color:rgba(16,185,129,.2)!important}
+    .guarantee-text{color:#065f46!important}
   `;
   if (theme === "bold") return `
     body{background:#06030f!important}
