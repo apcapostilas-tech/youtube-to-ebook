@@ -129,12 +129,18 @@ Retorne JSON:
   "offer": "apresentação da oferta com tudo incluso",
   "cta": "texto do botão de ação",
   "urgency": "elemento de urgência ou escassez",
+  "stats": [
+    {"num": 4500, "label": "emoji + descrição relevante ao produto (ex: 👥 Alunos formados)"},
+    {"num": 96, "label": "% métrica de resultado relevante (ex: % de aprovação)"},
+    {"num": 30, "label": "unidade + descrição (ex: dias para ver resultados)"}
+  ],
   "faq": [
     {"question": "pergunta 1", "answer": "resposta direta"},
     {"question": "pergunta 2", "answer": "resposta direta"},
     {"question": "pergunta 3", "answer": "resposta direta"}
   ]
-}`,
+}
+Os números em "stats.num" devem ser inteiros plausíveis e relevantes para o nicho do produto.`,
     }],
   });
 
@@ -180,12 +186,18 @@ Retorne JSON:
   "offer": "apresentação completa da oferta",
   "cta": "texto do botão de ação",
   "urgency": "elemento de urgência ou escassez",
+  "stats": [
+    {"num": 4500, "label": "emoji + descrição relevante ao produto (ex: 👥 Alunos formados)"},
+    {"num": 96, "label": "% métrica de resultado relevante (ex: % de aprovação)"},
+    {"num": 30, "label": "unidade + descrição (ex: dias para ver resultados)"}
+  ],
   "faq": [
     {"question": "pergunta 1", "answer": "resposta direta"},
     {"question": "pergunta 2", "answer": "resposta direta"},
     {"question": "pergunta 3", "answer": "resposta direta"}
   ]
-}`,
+}
+Os números em "stats.num" devem ser inteiros plausíveis e relevantes para o nicho do produto.`,
     }],
   });
 

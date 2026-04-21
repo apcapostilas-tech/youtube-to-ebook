@@ -245,14 +245,14 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         {/* STATS */}
         <div className="stats-bar">
           <div className="stats-inner">
-            {[
+            {(s.stats || [
               { num: 4800, label: "⭐ Leitores satisfeitos" },
               { num: 97, label: "% aprovam o conteúdo" },
               { num: 48, label: "horas de pesquisa destiladas" },
-            ].map((s, i) => (
+            ]).map((stat, i) => (
               <div className="stat" key={i}>
-                <span className="stat-num" data-target={s.num}>0</span>
-                <div className="stat-label">{s.label}</div>
+                <span className="stat-num" data-target={stat.num}>0</span>
+                <div className="stat-label">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -388,7 +388,6 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         </footer>
 
         <script dangerouslySetInnerHTML={{ __html: `
-          // Counter animation on load
           function animCount(el, target) {
             var start = 0, duration = 1800, startTime = null;
             function step(ts) {
@@ -400,18 +399,21 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
             }
             requestAnimationFrame(step);
           }
-          setTimeout(function() {
+          function runAnimations() {
             document.querySelectorAll('[data-target]').forEach(function(el) {
               animCount(el, parseInt(el.getAttribute('data-target')));
             });
-          }, 400);
-
-          // Progress bars
-          setTimeout(function() {
-            document.querySelectorAll('.prog-fill').forEach(function(el) {
-              el.style.width = el.getAttribute('data-width') + '%';
-            });
-          }, 600);
+            setTimeout(function() {
+              document.querySelectorAll('.prog-fill').forEach(function(el) {
+                el.style.width = el.getAttribute('data-width') + '%';
+              });
+            }, 200);
+          }
+          if (document.readyState === 'complete') {
+            setTimeout(runAnimations, 300);
+          } else {
+            window.addEventListener('load', function() { setTimeout(runAnimations, 300); });
+          }
         `}} />
       </body>
     </html>

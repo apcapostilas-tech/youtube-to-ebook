@@ -25,6 +25,7 @@ export interface SalesPageData {
   offer: string;
   cta: string;
   urgency: string;
+  stats?: { num: number; label: string }[];
   faq: { question: string; answer: string }[];
 }
 
