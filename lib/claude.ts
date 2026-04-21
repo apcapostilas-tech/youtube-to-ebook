@@ -103,12 +103,12 @@ export async function generateSalesPage(
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 3000,
+    max_tokens: 4500,
     system: `Você é um copywriter especialista em páginas de vendas de alto impacto.
 Use os frameworks: PAS (Problema-Agitação-Solução), AIDA e prova social.
 Escreva copy direto, específico e que gere urgência real. Sem clichês.
 ${langInstr}
-Responda APENAS com JSON válido.`,
+Responda APENAS com JSON válido, sem texto antes ou depois.`,
     messages: [{
       role: "user",
       content: `Crie uma página de vendas completa para este ebook:
@@ -118,37 +118,37 @@ Subtítulo: ${ebook.subtitle}
 Descrição: ${ebook.description}
 Capítulos: ${ebook.chapters.map((c) => c.title).join(", ")}
 
-Retorne JSON:
+Retorne JSON (nesta ordem exata):
 {
   "headline": "headline principal ultra-impactante (máx 10 palavras)",
-  "subheadline": "subheadline que aprofunda a promessa",
-  "problemSection": "seção que descreve a dor (2 parágrafos separados por \\n)",
-  "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
-  "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
-  "socialProof": "seção de prova social/credibilidade (1 parágrafo)",
-  "offer": "frase curta de apresentação da oferta (1 linha)",
+  "subheadline": "subheadline que aprofunda a promessa (1 frase)",
+  "cta": "texto do botão de compra (máx 6 palavras)",
+  "urgency": "elemento de urgência ou escassez (1 frase)",
   "offerItems": [
-    {"name": "📦 Nome do item principal", "price": "R$ 497"},
-    {"name": "📋 Bônus ou módulo extra", "price": "R$ 297"},
-    {"name": "🎯 Outro recurso incluso", "price": "R$ 197"}
+    {"name": "📦 Item principal do produto", "price": "R$ 497"},
+    {"name": "🎯 Bônus ou recurso extra 1", "price": "R$ 297"},
+    {"name": "📋 Bônus ou recurso extra 2", "price": "R$ 197"}
   ],
   "priceOriginal": "R$ 991",
   "priceFinal": "R$ 47",
-  "guarantee": "30 dias de garantia incondicional — se não gostar, devolvemos 100% do valor sem perguntas",
-  "cta": "texto do botão de ação",
-  "urgency": "elemento de urgência ou escassez (1 frase)",
+  "guarantee": "garantia de 30 dias — 1 frase direta",
   "stats": [
-    {"num": 4500, "label": "emoji + descrição relevante ao produto (ex: 👥 Alunos formados)"},
-    {"num": 96, "label": "% métrica de resultado relevante (ex: % de aprovação)"},
-    {"num": 30, "label": "unidade + descrição (ex: dias para ver resultados)"}
+    {"num": 4500, "label": "emoji + métrica relevante ao nicho"},
+    {"num": 96, "label": "% de resultado relevante"},
+    {"num": 30, "label": "número + unidade relevante"}
   ],
+  "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
   "faq": [
     {"question": "pergunta 1", "answer": "resposta direta"},
     {"question": "pergunta 2", "answer": "resposta direta"},
     {"question": "pergunta 3", "answer": "resposta direta"}
-  ]
+  ],
+  "offer": "frase curta de apresentação da oferta (1 linha)",
+  "problemSection": "seção que descreve a dor (2 parágrafos separados por \\n)",
+  "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
+  "socialProof": "seção de prova social/credibilidade (1 parágrafo)"
 }
-Stats.num devem ser inteiros plausíveis para o nicho. OfferItems devem ter 3-5 itens com preços realistas em R$. PriceOriginal é a soma dos itens, priceFinal é o preço real (muito menor).`,
+Stats.num = inteiros plausíveis para o nicho. OfferItems = 3-5 itens com preços em R$. PriceOriginal = soma dos itens, priceFinal = preço real (bem menor).`,
     }],
   });
 
@@ -168,12 +168,12 @@ export async function generateSalesPageFromText(
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 3000,
+    max_tokens: 4500,
     system: `Você é um copywriter especialista em páginas de vendas de alto impacto.
 Use os frameworks: PAS (Problema-Agitação-Solução), AIDA e prova social.
 Escreva copy direto, específico e que gere urgência real. Sem clichês.
 ${langInstr}
-Responda APENAS com JSON válido.`,
+Responda APENAS com JSON válido, sem texto antes ou depois.`,
     messages: [{
       role: "user",
       content: `Crie uma página de vendas de alta conversão baseada neste conteúdo.
@@ -181,31 +181,39 @@ Responda APENAS com JSON válido.`,
 Contexto: ${contentCtx}
 
 Conteúdo:
-${content.slice(0, 6000)}
+${content.slice(0, 5000)}
 
-Retorne JSON:
+Retorne JSON (nesta ordem exata):
 {
   "headline": "headline principal ultra-impactante (máx 10 palavras)",
-  "subheadline": "subheadline que aprofunda a promessa",
-  "problemSection": "seção que descreve a dor (2 parágrafos separados por \\n)",
-  "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
-  "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
-  "socialProof": "seção de prova social/credibilidade (1 parágrafo)",
-  "offer": "apresentação completa da oferta",
-  "cta": "texto do botão de ação",
-  "urgency": "elemento de urgência ou escassez",
-  "stats": [
-    {"num": 4500, "label": "emoji + descrição relevante ao produto (ex: 👥 Alunos formados)"},
-    {"num": 96, "label": "% métrica de resultado relevante (ex: % de aprovação)"},
-    {"num": 30, "label": "unidade + descrição (ex: dias para ver resultados)"}
+  "subheadline": "subheadline que aprofunda a promessa (1 frase)",
+  "cta": "texto do botão de compra (máx 6 palavras)",
+  "urgency": "elemento de urgência ou escassez (1 frase)",
+  "offerItems": [
+    {"name": "📦 Item principal do produto", "price": "R$ 497"},
+    {"name": "🎯 Bônus ou recurso extra 1", "price": "R$ 297"},
+    {"name": "📋 Bônus ou recurso extra 2", "price": "R$ 197"}
   ],
+  "priceOriginal": "R$ 991",
+  "priceFinal": "R$ 47",
+  "guarantee": "garantia de 30 dias — 1 frase direta",
+  "stats": [
+    {"num": 4500, "label": "emoji + métrica relevante ao nicho"},
+    {"num": 96, "label": "% de resultado relevante"},
+    {"num": 30, "label": "número + unidade relevante"}
+  ],
+  "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
   "faq": [
     {"question": "pergunta 1", "answer": "resposta direta"},
     {"question": "pergunta 2", "answer": "resposta direta"},
     {"question": "pergunta 3", "answer": "resposta direta"}
-  ]
+  ],
+  "offer": "frase curta de apresentação da oferta (1 linha)",
+  "problemSection": "seção que descreve a dor (2 parágrafos separados por \\n)",
+  "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
+  "socialProof": "seção de prova social/credibilidade (1 parágrafo)"
 }
-Os números em "stats.num" devem ser inteiros plausíveis e relevantes para o nicho do produto.`,
+Stats.num = inteiros plausíveis para o nicho. OfferItems = 3-5 itens com preços em R$. PriceOriginal = soma dos itens, priceFinal = preço real (bem menor).`,
     }],
   });
 
