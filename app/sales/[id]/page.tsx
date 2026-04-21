@@ -270,17 +270,54 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           .rev-name { font-size:13px; font-weight:700; color:#c0c0d8; }
           .rev-role { font-size:11px; color:#6060a0; }
 
-          /* OFFER */
-          .offer-box { background:#0f0f1a; border:1px solid #1a1a2e; border-radius:16px; padding:48px; text-align:center; }
-          .offer-list { list-style:none; text-align:left; margin:24px 0; }
-          .offer-list li { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #1a1a2e; font-size:.95rem; color:#c0c0d8; }
-          .offer-list li:last-child { border-bottom:none; }
-          .urgency-box { background:rgba(220,38,38,.08); border:1px solid rgba(220,38,38,.2); border-radius:10px; padding:16px 20px; margin:24px 0; color:#fca5a5; font-size:.9rem; font-weight:600; }
+          /* OFFER PREMIUM */
+          @keyframes offerGlow { 0%,100%{box-shadow:0 0 30px rgba(220,38,38,.2),0 0 60px rgba(249,115,22,.1)} 50%{box-shadow:0 0 50px rgba(220,38,38,.35),0 0 80px rgba(249,115,22,.15)} }
+          .offer-box {
+            background:linear-gradient(135deg,#0f0f1a,#120816);
+            border:1px solid rgba(249,115,22,.2); border-radius:20px; padding:48px;
+            text-align:center; position:relative; overflow:hidden;
+            animation:offerGlow 4s ease-in-out infinite;
+          }
+          .offer-box::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:3px;
+            background:linear-gradient(90deg,#dc2626,#f97316,#fbbf24,#f97316,#dc2626);
+            background-size:200% 100%; animation:borderSpin 3s linear infinite;
+          }
+          .offer-desc { color:#8080a0; font-size:.95rem; margin-bottom:28px; max-width:500px; margin-left:auto; margin-right:auto; }
+          .offer-stack { text-align:left; margin:0 0 28px; }
+          .offer-item {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:12px 16px; border-bottom:1px solid rgba(255,255,255,.04);
+            font-size:.9rem;
+          }
+          .offer-item:last-child { border-bottom:none; }
+          .offer-item-name { color:#c0c0d8; display:flex; align-items:center; gap:8px; }
+          .offer-item-price { color:#6060a0; font-weight:600; text-decoration:line-through; font-size:.85rem; }
+          .offer-divider { height:1px; background:linear-gradient(90deg,transparent,rgba(249,115,22,.3),transparent); margin:4px 0 20px; }
+          .price-block { margin:0 0 24px; }
+          .price-original { font-size:1.1rem; color:#4040a0; text-decoration:line-through; font-weight:600; display:block; margin-bottom:4px; }
+          .price-final-wrap { display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; }
+          .price-badge { background:rgba(220,38,38,.15); border:1px solid rgba(220,38,38,.3); color:#fca5a5; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; padding:5px 12px; border-radius:20px; }
+          .price-final {
+            font-size:3.2rem; font-weight:900; line-height:1;
+            background:linear-gradient(135deg,#fff,#f97316,#dc2626);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+            filter:drop-shadow(0 0 20px rgba(249,115,22,.5));
+          }
+          .guarantee-box {
+            display:flex; align-items:center; gap:14px;
+            background:rgba(34,197,94,.06); border:1px solid rgba(34,197,94,.15);
+            border-radius:12px; padding:16px 20px; margin:24px 0; text-align:left;
+          }
+          .guarantee-icon { font-size:2rem; flex-shrink:0; }
+          .guarantee-text { font-size:.85rem; color:#86efac; line-height:1.5; }
+          .urgency-box { background:rgba(220,38,38,.08); border:1px solid rgba(220,38,38,.2); border-radius:10px; padding:14px 18px; margin:20px 0; color:#fca5a5; font-size:.88rem; font-weight:600; display:flex; align-items:center; gap:8px; }
           .btn-offer {
             display:inline-flex; align-items:center; gap:10px;
             background:linear-gradient(135deg,#dc2626,#f97316); color:#fff;
-            font-size:1.2rem; font-weight:800; padding:22px 60px; border-radius:10px;
+            font-size:1.2rem; font-weight:800; padding:22px 60px; border-radius:12px;
             animation:pulse 2.5s ease-in-out infinite; transition:transform .2s; margin-top:8px;
+            box-shadow:0 8px 32px rgba(220,38,38,.4);
           }
           .btn-offer:hover { transform:scale(1.03); }
 
@@ -485,16 +522,53 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           <div className="container">
             <div className="tag">Oferta Especial</div>
             <div className="offer-box">
-              <p style={{ color:"#9090b0", marginBottom:20 }}>{s.offer}</p>
-              <ul className="offer-list">
-                {s.benefits.slice(0, 5).map((b, i) => (
-                  <li key={i}><span style={{ color:"#22c55e" }}>✅</span> {b}</li>
-                ))}
-              </ul>
+              <p className="offer-desc">{s.offer}</p>
+
+              {/* Item stack */}
+              {s.offerItems && s.offerItems.length > 0 ? (
+                <div className="offer-stack">
+                  {s.offerItems.map((item, i) => (
+                    <div className="offer-item" key={i}>
+                      <span className="offer-item-name">{item.name}</span>
+                      <span className="offer-item-price">{item.price}</span>
+                    </div>
+                  ))}
+                  <div className="offer-divider" />
+                </div>
+              ) : (
+                <ul className="offer-stack" style={{ listStyle:"none", marginBottom:28 }}>
+                  {s.benefits.slice(0, 4).map((b, i) => (
+                    <div className="offer-item" key={i}>
+                      <span className="offer-item-name">✅ {b}</span>
+                    </div>
+                  ))}
+                  <div className="offer-divider" />
+                </ul>
+              )}
+
+              {/* Price */}
+              <div className="price-block">
+                {s.priceOriginal && (
+                  <span className="price-original">De {s.priceOriginal}</span>
+                )}
+                <div className="price-final-wrap">
+                  {s.priceFinal && <span className="price-badge">🔥 Oferta especial</span>}
+                  <span className="price-final">{s.priceFinal || "Acesso imediato"}</span>
+                </div>
+              </div>
+
+              {/* Guarantee */}
+              {s.guarantee && (
+                <div className="guarantee-box">
+                  <span className="guarantee-icon">🛡️</span>
+                  <span className="guarantee-text">{s.guarantee}</span>
+                </div>
+              )}
+
               <div className="urgency-box">⏰ {s.urgency}</div>
               <a href={buyUrl} className="btn-offer">{s.cta} →</a>
-              <p style={{ fontSize:12, color:"#52525b", marginTop:14 }}>
-                🔒 Pagamento 100% seguro · 📥 Acesso imediato
+              <p style={{ fontSize:12, color:"#3a3a5a", marginTop:16 }}>
+                🔒 Pagamento 100% seguro · 📥 Acesso imediato · ✉️ Suporte incluso
               </p>
             </div>
           </div>

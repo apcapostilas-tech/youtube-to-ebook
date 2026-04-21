@@ -26,6 +26,10 @@ export interface SalesPageData {
   cta: string;
   urgency: string;
   stats?: { num: number; label: string }[];
+  offerItems?: { name: string; price: string }[];
+  priceOriginal?: string;
+  priceFinal?: string;
+  guarantee?: string;
   faq: { question: string; answer: string }[];
 }
 

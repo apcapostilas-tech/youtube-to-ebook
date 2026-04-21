@@ -126,9 +126,17 @@ Retorne JSON:
   "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
   "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
   "socialProof": "seção de prova social/credibilidade (1 parágrafo)",
-  "offer": "apresentação da oferta com tudo incluso",
+  "offer": "frase curta de apresentação da oferta (1 linha)",
+  "offerItems": [
+    {"name": "📦 Nome do item principal", "price": "R$ 497"},
+    {"name": "📋 Bônus ou módulo extra", "price": "R$ 297"},
+    {"name": "🎯 Outro recurso incluso", "price": "R$ 197"}
+  ],
+  "priceOriginal": "R$ 991",
+  "priceFinal": "R$ 47",
+  "guarantee": "30 dias de garantia incondicional — se não gostar, devolvemos 100% do valor sem perguntas",
   "cta": "texto do botão de ação",
-  "urgency": "elemento de urgência ou escassez",
+  "urgency": "elemento de urgência ou escassez (1 frase)",
   "stats": [
     {"num": 4500, "label": "emoji + descrição relevante ao produto (ex: 👥 Alunos formados)"},
     {"num": 96, "label": "% métrica de resultado relevante (ex: % de aprovação)"},
@@ -140,7 +148,7 @@ Retorne JSON:
     {"question": "pergunta 3", "answer": "resposta direta"}
   ]
 }
-Os números em "stats.num" devem ser inteiros plausíveis e relevantes para o nicho do produto.`,
+Stats.num devem ser inteiros plausíveis para o nicho. OfferItems devem ter 3-5 itens com preços realistas em R$. PriceOriginal é a soma dos itens, priceFinal é o preço real (muito menor).`,
     }],
   });
 
