@@ -143,16 +143,100 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           .btn-hero:hover { transform:scale(1.03); }
           .hero-meta { font-size:12px; color:#52525b; margin-top:10px; }
 
-          /* STATS */
-          .stats-bar { background:#0f0f1a; border-top:1px solid #1a1a2e; border-bottom:1px solid #1a1a2e; padding:36px 24px; }
-          .stats-inner { max-width:900px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-          .stat { text-align:center; }
-          .stat-num {
-            font-size:2.4rem; font-weight:900; display:block; line-height:1;
-            background:linear-gradient(135deg,#dc2626,#f97316);
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+          /* STATS PREMIUM */
+          @keyframes glowPulse { 0%,100%{box-shadow:0 0 20px rgba(220,38,38,.3),0 0 40px rgba(249,115,22,.1)} 50%{box-shadow:0 0 30px rgba(220,38,38,.5),0 0 60px rgba(249,115,22,.2)} }
+          @keyframes borderSpin { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+          @keyframes shimmer { 0%{left:-50%} 100%{left:140%} }
+          @keyframes countGlow { 0%,100%{filter:drop-shadow(0 0 4px rgba(249,115,22,.4))} 50%{filter:drop-shadow(0 0 12px rgba(249,115,22,.9))} }
+
+          .stats-bar { background:linear-gradient(180deg,#0a0a18,#0f0f1a); border-top:1px solid #1a1a2e; border-bottom:1px solid #1a1a2e; padding:52px 24px; }
+          .stats-inner { max-width:960px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+          .stat {
+            text-align:center; position:relative; padding:32px 20px 28px;
+            background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+            border:1px solid rgba(255,255,255,.07); border-radius:20px;
+            overflow:hidden; transition:transform .3s, border-color .3s;
+            animation:glowPulse 4s ease-in-out infinite;
           }
-          .stat-label { font-size:13px; color:#6060a0; margin-top:6px; }
+          .stat:nth-child(2) { animation-delay:.8s; }
+          .stat:nth-child(3) { animation-delay:1.6s; }
+          .stat:hover { transform:translateY(-4px); border-color:rgba(249,115,22,.3); }
+          .stat::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:2px;
+            background:linear-gradient(90deg,transparent,#dc2626,#f97316,#fbbf24,transparent);
+          }
+          .stat::after {
+            content:''; position:absolute; inset:0; border-radius:20px;
+            background:radial-gradient(ellipse at 50% 0%,rgba(249,115,22,.08) 0%,transparent 60%);
+            pointer-events:none;
+          }
+          .stat-icon { font-size:2rem; display:block; margin-bottom:12px; filter:drop-shadow(0 0 8px rgba(249,115,22,.7)); }
+          .stat-num {
+            font-size:3rem; font-weight:900; display:block; line-height:1;
+            background:linear-gradient(135deg,#fff 0%,#f97316 60%,#dc2626 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+            animation:countGlow 3s ease-in-out infinite; margin-bottom:4px;
+          }
+          .stat-label { font-size:12px; color:#7070a0; margin-top:8px; letter-spacing:.5px; }
+          .stat-mini-bar { height:2px; border-radius:2px; background:linear-gradient(90deg,#dc2626,#f97316); margin:14px auto 0; box-shadow:0 0 8px rgba(249,115,22,.6); transition:width .3s; }
+
+          /* PROGRESS PREMIUM */
+          .prog-list { margin-top:32px; }
+          .prog-item { margin-bottom:28px; }
+          .prog-labels { display:flex; justify-content:space-between; align-items:center; font-size:.85rem; font-weight:700; color:#c0c0d8; margin-bottom:10px; }
+          .prog-pct {
+            background:linear-gradient(135deg,#dc2626,#f97316); color:#fff;
+            font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px;
+            box-shadow:0 0 12px rgba(249,115,22,.5);
+          }
+          .prog-track {
+            height:14px; background:rgba(255,255,255,.04); border-radius:8px;
+            border:1px solid rgba(255,255,255,.06); overflow:hidden; position:relative;
+          }
+          .prog-fill {
+            height:100%; border-radius:8px; width:0;
+            background:linear-gradient(90deg,#991b1b,#dc2626,#f97316,#fbbf24);
+            box-shadow:0 0 20px rgba(249,115,22,.6),0 0 40px rgba(220,38,38,.3);
+            transition:width 1.8s cubic-bezier(.4,0,.2,1);
+            position:relative; overflow:hidden;
+          }
+          .prog-fill::after {
+            content:''; position:absolute; top:0; left:-50%; width:40%; height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+            animation:shimmer 2.8s ease-in-out infinite 2s;
+          }
+
+          /* DONUT CHART */
+          @keyframes donutSpin { from{stroke-dashoffset:565} }
+          .donut-section { padding:80px 0; border-bottom:1px solid #0f0f1a; background:radial-gradient(ellipse at 50% 50%,rgba(220,38,38,.04) 0%,transparent 70%); }
+          .donut-wrap { display:flex; align-items:center; justify-content:center; gap:56px; flex-wrap:wrap; }
+          .donut-chart { position:relative; width:220px; height:220px; flex-shrink:0; }
+          .donut-chart svg { overflow:visible; }
+          .donut-track { fill:none; stroke:rgba(255,255,255,.05); stroke-width:18; }
+          .donut-fill {
+            fill:none; stroke-width:18; stroke-linecap:round;
+            stroke-dasharray:565; stroke-dashoffset:565;
+            transition:stroke-dashoffset 2.4s cubic-bezier(.4,0,.2,1);
+            filter:drop-shadow(0 0 10px rgba(249,115,22,.8)) drop-shadow(0 0 20px rgba(220,38,38,.4));
+          }
+          .donut-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
+          .donut-pct {
+            font-size:3.2rem; font-weight:900; line-height:1;
+            background:linear-gradient(135deg,#fff,#f97316); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+          }
+          .donut-label { font-size:10px; color:#6060a0; text-transform:uppercase; letter-spacing:2px; margin-top:4px; text-align:center; max-width:80px; }
+          .donut-items { display:flex; flex-direction:column; gap:16px; }
+          .donut-item {
+            display:flex; align-items:center; gap:16px; padding:18px 22px;
+            background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06);
+            border-radius:14px; min-width:220px; position:relative; overflow:hidden;
+            transition:border-color .3s;
+          }
+          .donut-item:hover { border-color:rgba(249,115,22,.25); }
+          .donut-item::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,#dc2626,#f97316); }
+          .donut-item-icon { font-size:1.6rem; flex-shrink:0; }
+          .donut-item-num { font-size:1.8rem; font-weight:900; background:linear-gradient(135deg,#fff,#f97316); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+          .donut-item-label { font-size:11px; color:#7070a0; margin-top:3px; }
 
           /* SECTIONS */
           .container { max-width:760px; margin:0 auto; padding:0 24px; }
@@ -242,7 +326,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
 
-        {/* STATS */}
+        {/* STATS PREMIUM */}
         <div className="stats-bar">
           <div className="stats-inner">
             {(s.stats || [
@@ -253,6 +337,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
               <div className="stat" key={i}>
                 <span className="stat-num" data-target={stat.num}>0</span>
                 <div className="stat-label">{stat.label}</div>
+                <div className="stat-mini-bar" style={{ width: `${Math.min(100, (stat.num / ((s.stats?.[0]?.num || 4800) * 1.1)) * 100)}%` }} />
               </div>
             ))}
           </div>
@@ -298,19 +383,78 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
             </ul>
             <div className="prog-list">
               {[
-                ["Clareza e direção", 88],
-                ["Aplicação prática", 93],
-                ["Resultados reais", 85],
-                ["Confiança para agir", 96],
+                ["🎯 Clareza e direção", 88],
+                ["⚡ Aplicação prática", 93],
+                ["📈 Resultados reais", 85],
+                ["🔥 Confiança para agir", 96],
               ].map(([label, pct], i) => (
                 <div className="prog-item" key={i}>
-                  <div className="prog-labels"><span>{label}</span><span style={{ color:"#f97316" }}>{pct}%</span></div>
+                  <div className="prog-labels">
+                    <span>{label}</span>
+                    <span className="prog-pct">{pct}%</span>
+                  </div>
                   <div className="prog-track"><div className="prog-fill" data-width={pct} /></div>
                 </div>
               ))}
             </div>
           </div>
         </section>
+
+        {/* DONUT CHART */}
+        {(() => {
+          const stats = s.stats || [
+            { num: 4800, label: "Leitores satisfeitos" },
+            { num: 97, label: "% aprovam" },
+            { num: 48, label: "horas destiladas" },
+          ];
+          const pctStat = stats.find(st => st.num <= 100) || stats[1];
+          const otherStats = stats.filter(st => st !== pctStat);
+          const circumference = 565;
+          const pct = Math.min(100, pctStat.num);
+          return (
+            <section className="donut-section">
+              <div className="container">
+                <div className="tag">Resultados comprovados</div>
+                <h2>Os números não mentem</h2>
+                <div className="donut-wrap" style={{ marginTop: 40 }}>
+                  <div className="donut-chart">
+                    <svg viewBox="0 0 200 200" width="220" height="220">
+                      <defs>
+                        <linearGradient id="donutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#dc2626" />
+                          <stop offset="50%" stopColor="#f97316" />
+                          <stop offset="100%" stopColor="#fbbf24" />
+                        </linearGradient>
+                      </defs>
+                      <circle className="donut-track" cx="100" cy="100" r="90" />
+                      <circle className="donut-fill" cx="100" cy="100" r="90"
+                        stroke="url(#donutGrad)"
+                        data-circumference={circumference}
+                        data-pct={pct}
+                        style={{ transformOrigin: "100px 100px", transform: "rotate(-90deg)" }}
+                      />
+                    </svg>
+                    <div className="donut-center">
+                      <span className="donut-pct" data-donut-target={pct}>0</span>
+                      <span className="donut-label">{pctStat.label}</span>
+                    </div>
+                  </div>
+                  <div className="donut-items">
+                    {otherStats.map((st, i) => (
+                      <div className="donut-item" key={i}>
+                        <span className="donut-item-icon">{i === 0 ? "🚀" : "⭐"}</span>
+                        <div>
+                          <div className="donut-item-num" data-target={st.num}>0</div>
+                          <div className="donut-item-label">{st.label}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* PROVA SOCIAL */}
         <section>
@@ -388,31 +532,46 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         </footer>
 
         <script dangerouslySetInnerHTML={{ __html: `
-          function animCount(el, target) {
-            var start = 0, duration = 1800, startTime = null;
+          function animCount(el, target, suffix) {
+            var duration = 2000, startTime = null;
             function step(ts) {
               if (!startTime) startTime = ts;
               var progress = Math.min((ts - startTime) / duration, 1);
               var eased = 1 - Math.pow(1 - progress, 3);
-              el.textContent = Math.floor(eased * target).toLocaleString('pt-BR');
+              var val = Math.floor(eased * target);
+              el.textContent = val.toLocaleString('pt-BR') + (suffix || '');
               if (progress < 1) requestAnimationFrame(step);
             }
             requestAnimationFrame(step);
           }
           function runAnimations() {
+            // Counters
             document.querySelectorAll('[data-target]').forEach(function(el) {
               animCount(el, parseInt(el.getAttribute('data-target')));
             });
+            // Donut counter
+            document.querySelectorAll('[data-donut-target]').forEach(function(el) {
+              animCount(el, parseInt(el.getAttribute('data-donut-target')), '%');
+            });
+            // Donut SVG animation
+            setTimeout(function() {
+              document.querySelectorAll('.donut-fill').forEach(function(el) {
+                var pct = parseFloat(el.getAttribute('data-pct')) / 100;
+                var circ = parseFloat(el.getAttribute('data-circumference') || '565');
+                el.style.strokeDashoffset = circ - (circ * pct);
+              });
+            }, 100);
+            // Progress bars
             setTimeout(function() {
               document.querySelectorAll('.prog-fill').forEach(function(el) {
                 el.style.width = el.getAttribute('data-width') + '%';
               });
-            }, 200);
+            }, 300);
           }
           if (document.readyState === 'complete') {
-            setTimeout(runAnimations, 300);
+            setTimeout(runAnimations, 400);
           } else {
-            window.addEventListener('load', function() { setTimeout(runAnimations, 300); });
+            window.addEventListener('load', function() { setTimeout(runAnimations, 400); });
           }
         `}} />
       </body>
