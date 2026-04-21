@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { BookOpen, Zap, ExternalLink, Loader, Link, Check } from "lucide-react";
+import { BookOpen, Zap, ExternalLink, Loader, Link, Check, Download } from "lucide-react";
 import { ProjectJob } from "@/lib/types";
 
 export default function ResultPage() {
@@ -14,6 +14,24 @@ export default function ResultPage() {
   const [savingCheckout, setSavingCheckout] = useState(false);
   const [checkoutSaved, setCheckoutSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [downloadingHtml, setDownloadingHtml] = useState(false);
+
+  const downloadSalesHtml = async () => {
+    setDownloadingHtml(true);
+    try {
+      const res = await fetch(salesPageUrl);
+      const html = await res.text();
+      const blob = new Blob([html], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "pagina-de-vendas.html";
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setDownloadingHtml(false);
+    }
+  };
 
   const salesPageUrl = typeof window !== "undefined"
     ? `${window.location.origin}/sales/${id}`
@@ -109,6 +127,13 @@ export default function ResultPage() {
                 onClick={() => copyLink(salesPageUrl)}
                 className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors cursor-pointer">
                 {copied ? <><Check size={14} className="text-green-400" /> Copiado!</> : <><Link size={14} /> Copiar link</>}
+              </button>
+              <button
+                onClick={downloadSalesHtml}
+                disabled={downloadingHtml}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50">
+                {downloadingHtml ? <Loader size={14} className="animate-spin" /> : <Download size={14} />}
+                Baixar HTML
               </button>
             </>
           )}
