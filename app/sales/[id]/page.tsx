@@ -444,7 +444,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
             { num: 97, label: "% aprovam" },
             { num: 48, label: "horas destiladas" },
           ];
-          const pctStat = stats.find(st => st.num <= 100) || stats[1];
+          const pctStat = stats.find(st => st.num >= 50 && st.num <= 100) || stats.find(st => st.num > 0 && st.num <= 100) || stats[1];
           const otherStats = stats.filter(st => st !== pctStat);
           const circumference = 565;
           const pct = Math.min(100, pctStat.num);
@@ -522,7 +522,10 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           <div className="container">
             <div className="tag">Oferta Especial</div>
             <div className="offer-box">
-              <p className="offer-desc">{s.offer}</p>
+              {/* só mostra o parágrafo se não tiver itens estruturados */}
+              {(!s.offerItems || s.offerItems.length === 0) && (
+                <p className="offer-desc">{s.offer}</p>
+              )}
 
               {/* Item stack */}
               {s.offerItems && s.offerItems.length > 0 ? (
@@ -546,16 +549,18 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
                 </ul>
               )}
 
-              {/* Price */}
-              <div className="price-block">
-                {s.priceOriginal && (
-                  <span className="price-original">De {s.priceOriginal}</span>
-                )}
-                <div className="price-final-wrap">
-                  {s.priceFinal && <span className="price-badge">🔥 Oferta especial</span>}
-                  <span className="price-final">{s.priceFinal || "Acesso imediato"}</span>
+              {/* Price — só renderiza quando há valor monetário real */}
+              {s.priceFinal && /\d/.test(s.priceFinal) && (
+                <div className="price-block">
+                  {s.priceOriginal && /\d/.test(s.priceOriginal) && (
+                    <span className="price-original">De {s.priceOriginal}</span>
+                  )}
+                  <div className="price-final-wrap">
+                    <span className="price-badge">🔥 Oferta especial</span>
+                    <span className="price-final">{s.priceFinal}</span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Guarantee */}
               {s.guarantee && (
