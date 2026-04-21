@@ -348,9 +348,24 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           footer { padding:32px 24px; text-align:center; color:#333350; font-size:12px; border-top:1px solid #1a1a2e; }
 
           @media (max-width:600px) {
+            .hero { padding:70px 20px 56px; min-height:auto; }
+            .float-shape { display:none; }
+            .hero-glow { width:280px; height:280px; }
+            .hero h1 { font-size:2rem; }
+            .btn-hero { padding:16px 32px; font-size:1rem; }
             .stats-inner { grid-template-columns:1fr; gap:12px; }
+            .stat { padding:20px 16px 16px; }
+            .donut-wrap { gap:28px; }
+            .donut-chart { width:160px; height:160px; }
+            .donut-chart svg { width:160px; height:160px; }
+            .donut-pct { font-size:2.2rem; }
+            .donut-items { width:100%; }
+            .donut-item { min-width:unset; }
+            section { padding:56px 0; }
             .offer-box { padding:28px 20px; }
             .btn-offer { padding:18px 32px; font-size:1rem; }
+            .price-final { font-size:2.4rem; }
+            .reviews { grid-template-columns:1fr; }
           }
         `}</style>
       </head>
