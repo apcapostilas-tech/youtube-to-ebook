@@ -2,19 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { BookOpen, Zap, Target, ChevronDown, ChevronUp, ExternalLink, Loader, Image, Link, Check } from "lucide-react";
+import { BookOpen, Zap, ExternalLink, Loader, Link, Check } from "lucide-react";
 import { ProjectJob } from "@/lib/types";
 
 export default function ResultPage() {
   const { id } = useParams();
   const [job, setJob] = useState<ProjectJob | null>(null);
-  const [tab, setTab] = useState<"ebook" | "sales" | "ads">("ebook");
+  const [tab, setTab] = useState<"ebook" | "sales">("ebook");
   const [openChapter, setOpenChapter] = useState<number | null>(0);
   const [checkoutUrl, setCheckoutUrl] = useState("");
   const [savingCheckout, setSavingCheckout] = useState(false);
   const [checkoutSaved, setCheckoutSaved] = useState(false);
-  const [generatingImages, setGeneratingImages] = useState(false);
-  const [imageError, setImageError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const salesPageUrl = typeof window !== "undefined"
     ? `${window.location.origin}/sales/${id}`
@@ -28,6 +27,9 @@ export default function ResultPage() {
       if (d.success) {
         setJob(d.data);
         if (d.data.checkoutUrl) setCheckoutUrl(d.data.checkoutUrl);
+        // Set default tab based on mode
+        if (d.data.generateMode === "sales") setTab("sales");
+        else setTab("ebook");
       }
     });
   }, [id]);
@@ -44,27 +46,10 @@ export default function ResultPage() {
     setTimeout(() => setCheckoutSaved(false), 2000);
   };
 
-  const generateImages = async () => {
-    setGeneratingImages(true);
-    setImageError("");
-    try {
-      const res = await fetch("/api/generate-ad-images", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId: id }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        setImageError(data.error || "Erro ao gerar imagens");
-      } else {
-        if (data.data?.errors?.length) setImageError(`Avisos: ${data.data.errors.join("; ")}`);
-        const updated = await fetch(`/api/status/${id}`).then((r) => r.json());
-        if (updated.success) setJob(updated.data);
-      }
-    } catch (e) {
-      setImageError("Falha de conexão ao gerar imagens");
-    }
-    setGeneratingImages(false);
+  const copyLink = (url: string) => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (!job) return (
@@ -73,7 +58,13 @@ export default function ResultPage() {
     </div>
   );
 
-  const { ebook, salesPage, adCreatives } = job;
+  const { ebook, salesPage } = job;
+  const mode = job.generateMode || "both";
+  const title = ebook?.title || salesPage?.headline || "Seu Infoproduto";
+  const subtitle = ebook?.subtitle || salesPage?.subheadline || "";
+
+  const showEbookTab = mode === "ebook" || mode === "both";
+  const showSalesTab = mode === "sales" || mode === "both";
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
@@ -84,74 +75,66 @@ export default function ResultPage() {
           </div>
           <span className="font-bold">EbookExpress</span>
         </div>
-        <a href="/" className="text-sm text-white/40 hover:text-white transition-colors">← Novo Ebook</a>
+        <a href="/" className="text-sm text-white/40 hover:text-white transition-colors">← Novo projeto</a>
       </header>
 
-      {ebook && (
-        <div className="max-w-4xl mx-auto px-6 py-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-medium mb-4">
-            ✓ Gerado com sucesso
-          </div>
-          <h1 className="text-3xl font-black mb-2">{ebook.title}</h1>
-          <p className="text-white/50 mb-6">{ebook.subtitle}</p>
-
-          {/* Links */}
-          <div className="flex flex-wrap gap-3 max-w-2xl mx-auto justify-center">
-            <a
-              href={ebookPageUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity"
-            >
-              <BookOpen size={14} /> Ver Ebook
-            </a>
-            <a
-              href={`/api/ebook-pdf/${id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors"
-            >
-              ⬇ Baixar PDF
-            </a>
-            <a
-              href={salesPageUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors"
-            >
-              <ExternalLink size={14} /> Página de Vendas
-            </a>
-            <button
-              onClick={() => { navigator.clipboard.writeText(salesPageUrl); }}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors cursor-pointer"
-            >
-              <Link size={14} /> Copiar Link Vendas
-            </button>
-          </div>
+      <div className="max-w-4xl mx-auto px-6 py-10 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-medium mb-4">
+          ✓ Gerado com sucesso
         </div>
-      )}
+        <h1 className="text-2xl font-black mb-2">{title}</h1>
+        {subtitle && <p className="text-white/50 mb-6 text-sm">{subtitle}</p>}
+
+        {/* Action buttons */}
+        <div className="flex flex-wrap gap-3 max-w-2xl mx-auto justify-center mb-8">
+          {showEbookTab && ebook && (
+            <>
+              <a href={ebookPageUrl} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+                <BookOpen size={14} /> Ver Ebook
+              </a>
+              <a href={`${ebookPageUrl}?print=1`} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors">
+                ⬇ Salvar como PDF
+              </a>
+            </>
+          )}
+          {showSalesTab && salesPage && (
+            <>
+              <a href={salesPageUrl} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors">
+                <ExternalLink size={14} /> Ver Página de Vendas
+              </a>
+              <button
+                onClick={() => copyLink(salesPageUrl)}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white/70 hover:bg-white/10 transition-colors cursor-pointer">
+                {copied ? <><Check size={14} className="text-green-400" /> Copiado!</> : <><Link size={14} /> Copiar link</>}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
 
       <div className="max-w-4xl mx-auto px-6">
-        <div className="flex gap-1 bg-white/5 rounded-xl p-1 mb-8">
-          {[
-            { key: "ebook", label: "Ebook", icon: BookOpen },
-            { key: "sales", label: "Página de Vendas", icon: Zap },
-            { key: "ads", label: "Criativos Ads", icon: Target },
-          ].map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setTab(key as typeof tab)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                tab === key ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
-              }`}
-            >
-              <Icon size={14} /> {label}
-            </button>
-          ))}
-        </div>
+        {/* Tabs — only show if both modes */}
+        {showEbookTab && showSalesTab && (
+          <div className="flex gap-1 bg-white/5 rounded-xl p-1 mb-8">
+            {[
+              { key: "ebook" as const, label: "Ebook", icon: BookOpen, show: showEbookTab },
+              { key: "sales" as const, label: "Página de Vendas", icon: Zap, show: showSalesTab },
+            ].filter(t => t.show).map(({ key, label, icon: Icon }) => (
+              <button key={key} onClick={() => setTab(key)}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  tab === key ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
+                }`}>
+                <Icon size={14} /> {label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* EBOOK TAB */}
-        {tab === "ebook" && ebook && (
+        {(tab === "ebook" || !showSalesTab) && ebook && (
           <div className="space-y-4 pb-16">
             <div className="bg-white/3 border border-white/5 rounded-xl p-6 mb-6">
               <p className="text-white/60 leading-relaxed">{ebook.description}</p>
@@ -160,13 +143,12 @@ export default function ResultPage() {
               <div key={i} className="bg-white/3 border border-white/5 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setOpenChapter(openChapter === i ? null : i)}
-                  className="w-full flex items-center justify-between px-6 py-4 text-left cursor-pointer hover:bg-white/5 transition-colors"
-                >
+                  className="w-full flex items-center justify-between px-6 py-4 text-left cursor-pointer hover:bg-white/5 transition-colors">
                   <div className="flex items-center gap-3">
                     <span className="w-7 h-7 rounded-lg bg-red-500/20 text-red-400 text-xs font-bold flex items-center justify-center">{i + 1}</span>
                     <span className="font-semibold">{chapter.title}</span>
                   </div>
-                  {openChapter === i ? <ChevronUp size={16} className="text-white/30" /> : <ChevronDown size={16} className="text-white/30" />}
+                  <span className="text-white/30 text-xs">{openChapter === i ? "▲" : "▼"}</span>
                 </button>
                 {openChapter === i && (
                   <div className="px-6 pb-6 space-y-4">
@@ -197,7 +179,7 @@ export default function ResultPage() {
         )}
 
         {/* SALES PAGE TAB */}
-        {tab === "sales" && salesPage && (
+        {(tab === "sales" || !showEbookTab) && salesPage && (
           <div className="space-y-6 pb-16">
             {/* Checkout URL */}
             <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-5">
@@ -213,8 +195,7 @@ export default function ResultPage() {
                 <button
                   onClick={saveCheckout}
                   disabled={savingCheckout}
-                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg text-sm font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-colors"
-                >
+                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 rounded-lg text-sm font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-colors">
                   {checkoutSaved ? <><Check size={14} /> Salvo!</> : savingCheckout ? <Loader size={14} className="animate-spin" /> : "Salvar"}
                 </button>
               </div>
@@ -268,62 +249,6 @@ export default function ResultPage() {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* ADS TAB */}
-        {tab === "ads" && adCreatives && (
-          <div className="pb-16">
-            {imageError && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
-                {imageError}
-              </div>
-            )}
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-white/40 text-sm">{adCreatives.filter(a => a.imageUrl).length}/{adCreatives.length} imagens geradas</p>
-              <button
-                onClick={generateImages}
-                disabled={generatingImages}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-semibold cursor-pointer disabled:opacity-50 transition-colors"
-              >
-                {generatingImages ? <><Loader size={14} className="animate-spin" /> Gerando imagens...</> : <><Image size={14} /> Gerar Imagens</>}
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {adCreatives.map((ad, i) => (
-                <div key={i} className="bg-white/3 border border-white/5 rounded-xl overflow-hidden">
-                  {ad.imageUrl ? (
-                    <img src={ad.imageUrl} alt={ad.headline} className="w-full aspect-square object-cover" />
-                  ) : (
-                    <div className="w-full aspect-square bg-white/3 flex items-center justify-center">
-                      <Image size={32} className="text-white/10" />
-                    </div>
-                  )}
-                  <div className="p-5 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase tracking-wider text-red-400">{ad.format}</span>
-                      <span className="text-xs text-white/20">{ad.format === "story" ? "9:16" : ad.format === "feed" ? "1:1" : "múltiplo"}</span>
-                    </div>
-                    <div>
-                      <p className="text-xs text-white/30 mb-1">Headline</p>
-                      <p className="font-bold text-white">{ad.headline}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-white/30 mb-1">Texto</p>
-                      <p className="text-sm text-white/70">{ad.body}</p>
-                    </div>
-                    <div className="bg-white/5 rounded-lg px-3 py-2 text-center">
-                      <p className="text-sm font-semibold text-orange-400">{ad.cta}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-white/30 mb-1">Prompt da imagem</p>
-                      <p className="text-xs text-white/40 italic">{ad.imagePrompt}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         )}

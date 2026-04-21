@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getJob, saveJob } from "@/lib/jobs";
-import { generateEbook, generateSalesPage, generateAdCreatives } from "@/lib/claude";
+import { generateEbook, generateSalesPage, generateSalesPageFromText } from "@/lib/claude";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
   const job = getJob(jobId);
   if (!job?.transcript) {
-    return NextResponse.json({ success: false, error: "Job ou transcrição não encontrada" }, { status: 404 });
+    return NextResponse.json({ success: false, error: "Job ou conteúdo não encontrado" }, { status: 404 });
   }
 
   try {
@@ -19,14 +19,23 @@ export async function POST(request: NextRequest) {
 
     const apiKey = job.anthropicKey;
     const lang = job.language || "pt-BR";
+    const mode = job.generateMode || "both";
+    const contentType = job.contentType || "transcript";
 
-    job.ebook = await generateEbook(job.transcript, job.videoTitle || "", apiKey, lang);
-    saveJob(job);
+    if (mode === "ebook" || mode === "both") {
+      job.ebook = await generateEbook(job.transcript, job.videoTitle || "", apiKey, lang, contentType);
+      saveJob(job);
+    }
 
-    job.salesPage = await generateSalesPage(job.ebook, apiKey, lang);
-    saveJob(job);
-
-    job.adCreatives = await generateAdCreatives(job.ebook, job.salesPage, apiKey, lang);
+    if (mode === "sales") {
+      // Generate sales page directly from raw content
+      job.salesPage = await generateSalesPageFromText(job.transcript, contentType, apiKey, lang);
+      saveJob(job);
+    } else if (mode === "both" && job.ebook) {
+      // Generate sales page from ebook
+      job.salesPage = await generateSalesPage(job.ebook, apiKey, lang);
+      saveJob(job);
+    }
 
     job.status = "done";
     saveJob(job);
@@ -35,9 +44,9 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         jobId: job.id,
-        ebookTitle: job.ebook.title,
-        chaptersCount: job.ebook.chapters.length,
-        adsCount: job.adCreatives.length,
+        mode,
+        ebookTitle: job.ebook?.title,
+        hasSalesPage: !!job.salesPage,
       },
     });
   } catch (err) {

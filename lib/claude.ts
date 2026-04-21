@@ -1,17 +1,14 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { EbookData, SalesPageData, AdCreative } from "./types";
+import { EbookData, SalesPageData } from "./types";
 
 function parseJsonSafe(text: string): unknown {
   const clean = text.replace(/```json\n?|\n?```/g, "").trim();
   try {
     return JSON.parse(clean);
   } catch {
-    // Tenta extrair o JSON mesmo que truncado
     const start = clean.indexOf("{") !== -1 ? clean.indexOf("{") : clean.indexOf("[");
     if (start === -1) throw new Error("Nenhum JSON encontrado na resposta");
-    const snippet = clean.slice(start);
-    // Tenta fechar chaves/colchetes abertos
-    let fixed = snippet;
+    let fixed = clean.slice(start);
     const opens = (fixed.match(/\{/g) || []).length - (fixed.match(/\}/g) || []).length;
     const arrOpens = (fixed.match(/\[/g) || []).length - (fixed.match(/\]/g) || []).length;
     for (let i = 0; i < arrOpens; i++) fixed += "]";
@@ -36,53 +33,60 @@ const LANG_INSTRUCTION: Record<string, string> = {
   "ja": "すべてのコンテンツを日本語で書いてください。",
 };
 
+const CONTENT_TYPE_CONTEXT: Record<string, string> = {
+  transcript: "Esta é uma transcrição de vídeo. Extraia os melhores insights, ensinamentos práticos e conhecimentos do conteúdo.",
+  description: "Esta é uma descrição de produto, serviço ou curso. Use estas informações para criar conteúdo educativo e persuasivo.",
+  clone: "Esta é uma referência de página de vendas ou copy. Recrie a estrutura adaptando para um produto similar com copy original.",
+};
+
 export async function generateEbook(
-  transcript: string,
-  videoTitle: string,
+  content: string,
+  title: string,
   apiKey?: string,
-  language = "pt-BR"
+  language = "pt-BR",
+  contentType = "transcript"
 ): Promise<EbookData> {
   const client = getClient(apiKey);
   const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
+  const contentCtx = CONTENT_TYPE_CONTEXT[contentType] || CONTENT_TYPE_CONTEXT.transcript;
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 8000,
-    system: `Você é um especialista em transformar conteúdo de vídeos em ebooks de alto valor.
+    system: `Você é um especialista em transformar conteúdo em ebooks de alto valor.
 Crie ebooks estruturados, envolventes e práticos que gerem transformação real no leitor.
 ${langInstr}
 Responda APENAS com JSON válido, sem markdown, sem explicações.`,
-    messages: [
-      {
-        role: "user",
-        content: `Transforme esta transcrição em um ebook profissional e completo.
+    messages: [{
+      role: "user",
+      content: `Transforme este conteúdo em um ebook profissional e completo.
 
-Título do vídeo: "${videoTitle}"
+Contexto: ${contentCtx}
+${title ? `Título de referência: "${title}"` : ""}
 
-Transcrição:
-${transcript.slice(0, 6000)}
+Conteúdo:
+${content.slice(0, 6000)}
 
-Retorne APENAS JSON válido (sem texto fora):
+Retorne APENAS JSON válido:
 {
   "title": "título impactante do ebook",
   "subtitle": "subtítulo que promete resultado específico",
   "author": "Autor",
-  "description": "3 frases descrevendo o que o leitor vai aprender e transformar",
+  "description": "3 frases descrevendo o que o leitor vai aprender",
   "chapters": [
     {
       "title": "título do capítulo",
-      "content": "3 parágrafos completos com ensinamentos práticos extraídos do vídeo. Seja específico, cite exemplos, explique o raciocínio por trás de cada passo.",
+      "content": "3 parágrafos completos com ensinamentos práticos. Seja específico, cite exemplos, explique o raciocínio.",
       "keyPoints": ["ponto prático 1", "ponto prático 2", "ponto prático 3", "ponto prático 4"],
       "quote": "frase marcante ou insight poderoso deste capítulo"
     }
   ],
-  "conclusion": "3 frases de conclusão poderosa com call to action implícito",
+  "conclusion": "3 frases de conclusão poderosa",
   "callToAction": "chamada para ação direta e urgente"
 }
 
-Crie 4 capítulos completos. Cada capítulo deve ter profundidade real — extraia os melhores insights do vídeo.`,
-      },
-    ],
+Crie 4 capítulos completos com profundidade real.`,
+    }],
   });
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
@@ -105,85 +109,86 @@ Use os frameworks: PAS (Problema-Agitação-Solução), AIDA e prova social.
 Escreva copy direto, específico e que gere urgência real. Sem clichês.
 ${langInstr}
 Responda APENAS com JSON válido.`,
-    messages: [
-      {
-        role: "user",
-        content: `Crie uma página de vendas completa para este ebook:
+    messages: [{
+      role: "user",
+      content: `Crie uma página de vendas completa para este ebook:
 
 Título: ${ebook.title}
 Subtítulo: ${ebook.subtitle}
 Descrição: ${ebook.description}
 Capítulos: ${ebook.chapters.map((c) => c.title).join(", ")}
-CTA: ${ebook.callToAction}
 
-Retorne JSON com esta estrutura:
+Retorne JSON:
 {
   "headline": "headline principal ultra-impactante (máx 10 palavras)",
-  "subheadline": "subheadline que complementa e aprofunda a promessa",
-  "problemSection": "seção que descreve a dor/problema do leitor (2 parágrafos)",
-  "solutionSection": "seção que apresenta o ebook como solução (2 parágrafos)",
-  "benefits": ["benefício específico 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
-  "socialProof": "seção de prova social / credibilidade (1 parágrafo)",
-  "offer": "apresentação da oferta com tudo que está incluso",
-  "cta": "texto do botão de chamada para ação",
+  "subheadline": "subheadline que aprofunda a promessa",
+  "problemSection": "seção que descreve a dor (2 parágrafos separados por \\n)",
+  "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
+  "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
+  "socialProof": "seção de prova social/credibilidade (1 parágrafo)",
+  "offer": "apresentação da oferta com tudo incluso",
+  "cta": "texto do botão de ação",
   "urgency": "elemento de urgência ou escassez",
   "faq": [
-    {"question": "pergunta comum 1", "answer": "resposta direta"},
-    {"question": "pergunta comum 2", "answer": "resposta direta"},
-    {"question": "pergunta comum 3", "answer": "resposta direta"}
+    {"question": "pergunta 1", "answer": "resposta direta"},
+    {"question": "pergunta 2", "answer": "resposta direta"},
+    {"question": "pergunta 3", "answer": "resposta direta"}
   ]
 }`,
-      },
-    ],
+    }],
   });
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
   return parseJsonSafe(text) as SalesPageData;
 }
 
-export async function generateAdCreatives(
-  ebook: EbookData,
-  salesPage: SalesPageData,
+export async function generateSalesPageFromText(
+  content: string,
+  contentType = "transcript",
   apiKey?: string,
   language = "pt-BR"
-): Promise<AdCreative[]> {
+): Promise<SalesPageData> {
   const client = getClient(apiKey);
   const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
+  const contentCtx = CONTENT_TYPE_CONTEXT[contentType] || CONTENT_TYPE_CONTEXT.transcript;
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 2000,
-    system: `Você é especialista em criação de anúncios para Meta Ads (Facebook e Instagram).
-Crie anúncios que param o scroll, geram curiosidade e convertem.
+    max_tokens: 3000,
+    system: `Você é um copywriter especialista em páginas de vendas de alto impacto.
+Use os frameworks: PAS (Problema-Agitação-Solução), AIDA e prova social.
+Escreva copy direto, específico e que gere urgência real. Sem clichês.
 ${langInstr}
 Responda APENAS com JSON válido.`,
-    messages: [
-      {
-        role: "user",
-        content: `Crie 3 criativos para Meta Ads para este ebook:
+    messages: [{
+      role: "user",
+      content: `Crie uma página de vendas de alta conversão baseada neste conteúdo.
 
-Título: ${ebook.title}
-Headline da página de vendas: ${salesPage.headline}
-Benefícios: ${salesPage.benefits.join(", ")}
+Contexto: ${contentCtx}
 
-Crie 1 criativo para cada formato: story (vertical 9:16), feed (quadrado 1:1), carrossel.
+Conteúdo:
+${content.slice(0, 6000)}
 
-Retorne JSON array:
-[
-  {
-    "format": "story",
-    "headline": "texto curto e impactante (máx 6 palavras)",
-    "body": "texto do anúncio (máx 3 linhas, direto ao ponto)",
-    "cta": "texto do botão CTA",
-    "imagePrompt": "descrição em inglês para gerar imagem fotorrealista impactante para este anúncio, sem texto na imagem, estilo cinematográfico, sem rostos famosos"
-  },
-  { "format": "feed", ... },
-  { "format": "carrossel", ... }
-]`,
-      },
-    ],
+Retorne JSON:
+{
+  "headline": "headline principal ultra-impactante (máx 10 palavras)",
+  "subheadline": "subheadline que aprofunda a promessa",
+  "problemSection": "seção que descreve a dor (2 parágrafos separados por \\n)",
+  "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
+  "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
+  "socialProof": "seção de prova social/credibilidade (1 parágrafo)",
+  "offer": "apresentação completa da oferta",
+  "cta": "texto do botão de ação",
+  "urgency": "elemento de urgência ou escassez",
+  "faq": [
+    {"question": "pergunta 1", "answer": "resposta direta"},
+    {"question": "pergunta 2", "answer": "resposta direta"},
+    {"question": "pergunta 3", "answer": "resposta direta"}
+  ]
+}`,
+    }],
   });
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
-  return parseJsonSafe(text) as AdCreative[];
+  return parseJsonSafe(text) as SalesPageData;
 }

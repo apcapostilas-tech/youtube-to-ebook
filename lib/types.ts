@@ -28,15 +28,6 @@ export interface SalesPageData {
   faq: { question: string; answer: string }[];
 }
 
-export interface AdCreative {
-  format: "story" | "feed" | "carrossel";
-  headline: string;
-  body: string;
-  cta: string;
-  imagePrompt: string;
-  imageUrl?: string;
-}
-
 export interface ProjectJob {
   id: string;
   youtubeUrl: string;
@@ -47,12 +38,11 @@ export interface ProjectJob {
   anthropicKey?: string;
   youtubeApiKey?: string;
   language?: string;
+  contentType?: "transcript" | "description" | "clone";
+  generateMode?: "both" | "ebook" | "sales";
   ebook?: EbookData;
   salesPage?: SalesPageData;
-  adCreatives?: AdCreative[];
   checkoutUrl?: string;
-  pdfUrl?: string;
-  salesPageUrl?: string;
   status: "pending" | "extracting" | "generating" | "done" | "error";
   error?: string;
   createdAt: number;

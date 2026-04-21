@@ -2,49 +2,74 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Link2, BookOpen, Zap, ShieldCheck, Loader, ChevronRight, Key, FileText, ChevronDown } from "lucide-react";
+import { BookOpen, Zap, Key, Loader, ChevronRight, ChevronDown } from "lucide-react";
+
+type ContentType = "transcript" | "description" | "clone";
+type GenerateMode = "both" | "ebook" | "sales";
+
+const CONTENT_TYPES: Record<ContentType, { label: string; icon: string; placeholder: string }> = {
+  transcript: {
+    label: "Transcrição de vídeo",
+    icon: "🎬",
+    placeholder: "Cole aqui a transcrição ou legendas do vídeo...\n\nDica: No YouTube, clique nos 3 pontinhos → \"Abrir transcrição\" → selecione todo o texto e copie.",
+  },
+  description: {
+    label: "Descrição do produto",
+    icon: "📦",
+    placeholder: "Descreva seu produto, serviço ou curso:\n\n• O que é?\n• Para quem é?\n• Qual problema resolve?\n• Principais benefícios?\n• Diferenciais em relação à concorrência?",
+  },
+  clone: {
+    label: "Clonar página de vendas",
+    icon: "📋",
+    placeholder: "Cole aqui o texto de uma página de vendas que você quer usar como referência ou clonar...\n\nUsaremos a estrutura e estilo para criar uma versão original para o seu produto.",
+  },
+};
+
+const GENERATE_MODES: Record<GenerateMode, { label: string; icon: string }> = {
+  both: { label: "Ebook + Página de Vendas", icon: "⚡" },
+  ebook: { label: "Só o Ebook", icon: "📖" },
+  sales: { label: "Só Página de Vendas", icon: "🛒" },
+};
 
 export default function HomePage() {
   const router = useRouter();
-  const [url, setUrl] = useState("");
-  const [apiKey, setApiKey] = useState("");
-  const [showKey, setShowKey] = useState(false);
-  const [manualTranscript, setManualTranscript] = useState("");
-  const [showManual, setShowManual] = useState(false);
+  const [content, setContent] = useState("");
+  const [contentType, setContentType] = useState<ContentType>("transcript");
+  const [generateMode, setGenerateMode] = useState<GenerateMode>("both");
   const [language, setLanguage] = useState("pt-BR");
-  const [youtubeKey, setYoutubeKey] = useState("");
-  const [showYtKey, setShowYtKey] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState<"idle" | "extracting" | "generating">("idle");
+  const [step, setStep] = useState<"idle" | "generating">("idle");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim() && !manualTranscript.trim()) return;
+    if (!content.trim()) return;
     setLoading(true);
     setError("");
-    setStep("extracting");
+    setStep("generating");
 
     try {
       const extractRes = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          url: url || "https://youtube.com",
-          transcript: manualTranscript || undefined,
+          content,
+          contentType,
+          generateMode,
           anthropicKey: apiKey || undefined,
-          youtubeApiKey: youtubeKey || undefined,
           language,
         }),
       });
       const extractText = await extractRes.text();
       let extractData: { success: boolean; error?: string; data?: { jobId: string } };
       try { extractData = JSON.parse(extractText); }
-      catch { throw new Error(`Servidor indisponível. Aguarde e tente novamente.`); }
-      if (!extractData.success || !extractData.data?.jobId) throw new Error(extractData.error || "Job ID não retornado");
-      const jobId = extractData.data.jobId;
+      catch { throw new Error("Servidor indisponível. Aguarde e tente novamente."); }
+      if (!extractData.success || !extractData.data?.jobId) throw new Error(extractData.error || "Erro ao processar conteúdo");
 
-      setStep("generating");
+      const jobId = extractData.data.jobId;
 
       const genRes = await fetch("/api/generate-ebook", {
         method: "POST",
@@ -54,7 +79,7 @@ export default function HomePage() {
       const genText = await genRes.text();
       let genData: { success: boolean; error?: string };
       try { genData = JSON.parse(genText); }
-      catch { throw new Error(`Erro ao gerar conteúdo. Tente novamente em instantes.`); }
+      catch { throw new Error("Erro ao gerar conteúdo. Tente novamente em instantes."); }
       if (!genData.success) throw new Error(genData.error);
 
       router.push(`/result/${jobId}`);
@@ -65,13 +90,13 @@ export default function HomePage() {
     }
   };
 
-  const stepLabel = step === "extracting"
-    ? "Extraindo transcrição do YouTube..."
-    : step === "generating"
-    ? "Gerando ebook, página de vendas e criativos com IA..."
-    : "";
+  const canSubmit = !loading && content.trim().length > 20;
 
-  const canSubmit = !loading && (url.trim().length > 0 || manualTranscript.trim().length > 0);
+  const stepLabel = generateMode === "ebook"
+    ? "Gerando ebook com IA..."
+    : generateMode === "sales"
+    ? "Gerando página de vendas com IA..."
+    : "Gerando ebook e página de vendas com IA...";
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
@@ -80,135 +105,136 @@ export default function HomePage() {
           <BookOpen size={16} />
         </div>
         <span className="font-bold text-lg">EbookExpress</span>
-        <span className="text-xs text-white/30 ml-2">YouTube → Ebook em minutos</span>
+        <span className="text-xs text-white/30 ml-2">Conteúdo → Infoproduto em minutos</span>
       </header>
 
-      <section className="flex-1 flex flex-col items-center justify-center px-4 py-20">
-        <div className="max-w-2xl w-full text-center mb-12">
+      <section className="flex-1 flex flex-col items-center justify-center px-4 py-16">
+        <div className="max-w-2xl w-full text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium mb-6">
-            <Zap size={10} />
-            Powered by Claude AI
+            <Zap size={10} /> Powered by Claude AI
           </div>
-          <h1 className="text-5xl font-black mb-4 leading-tight">
-            Transforme qualquer vídeo do<br />
+          <h1 className="text-4xl font-black mb-3 leading-tight">
+            Transforme qualquer conteúdo em<br />
             <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
-              YouTube em Ebook
+              Infoproduto Pronto
             </span>
           </h1>
-          <p className="text-white/50 text-lg mb-2">
-            Cole o link → receba ebook completo, página de vendas pronta e criativos para Meta Ads.
+          <p className="text-white/50 text-base">
+            Cole sua transcrição, descrição ou copy — receba ebook completo e página de vendas.
           </p>
-          <p className="text-white/30 text-sm">Em menos de 2 minutos. Sem esforço.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="max-w-2xl w-full space-y-4">
-          {/* URL do YouTube */}
-          <div className="flex gap-3">
-            <div className="flex-1 flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus-within:border-red-500/50 transition-colors">
-              <Link2 size={18} className="text-red-400 flex-shrink-0" />
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://www.youtube.com/watch?v=..."
-                className="flex-1 bg-transparent text-white placeholder-white/30 outline-none text-sm"
-                disabled={loading}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 disabled:opacity-50 transition-all cursor-pointer"
-            >
-              {loading ? <Loader size={16} className="animate-spin" /> : <>Gerar <ChevronRight size={16} /></>}
-            </button>
+        <form onSubmit={handleSubmit} className="max-w-2xl w-full space-y-3">
+
+          {/* Content Type Selector */}
+          <div className="flex gap-2">
+            {(Object.entries(CONTENT_TYPES) as [ContentType, typeof CONTENT_TYPES[ContentType]][]).map(([key, cfg]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setContentType(key)}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+                  contentType === key
+                    ? "bg-white/10 border-white/20 text-white"
+                    : "bg-white/3 border-white/5 text-white/40 hover:text-white/70"
+                }`}
+              >
+                {cfg.icon} {cfg.label}
+              </button>
+            ))}
           </div>
 
-          {/* Transcript manual */}
+          {/* Text Area */}
+          <div className="bg-white/3 border border-white/10 rounded-xl focus-within:border-red-500/40 transition-colors">
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder={CONTENT_TYPES[contentType].placeholder}
+              rows={9}
+              disabled={loading}
+              className="w-full bg-transparent px-4 py-4 text-sm text-white/80 placeholder-white/20 outline-none resize-none"
+            />
+            <div className="px-4 pb-3 text-xs text-white/20 text-right">
+              {content.length} caracteres {content.length < 20 && content.length > 0 && "— mínimo 20"}
+            </div>
+          </div>
+
+          {/* Generation Mode */}
+          <div className="bg-white/3 border border-white/5 rounded-xl p-3">
+            <p className="text-xs text-white/30 mb-2 font-medium uppercase tracking-wider">O que gerar:</p>
+            <div className="flex gap-2">
+              {(Object.entries(GENERATE_MODES) as [GenerateMode, typeof GENERATE_MODES[GenerateMode]][]).map(([key, cfg]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setGenerateMode(key)}
+                  className={`flex-1 py-2 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    generateMode === key
+                      ? "bg-gradient-to-r from-red-500/80 to-orange-500/80 text-white"
+                      : "bg-white/5 text-white/40 hover:text-white/70"
+                  }`}
+                >
+                  {cfg.icon} {cfg.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Advanced Settings */}
           <div className="border border-white/5 rounded-xl overflow-hidden">
             <button
               type="button"
-              onClick={() => setShowManual(!showManual)}
+              onClick={() => setShowAdvanced(!showAdvanced)}
               className="w-full flex items-center justify-between px-4 py-3 bg-white/3 hover:bg-white/5 transition-colors cursor-pointer"
             >
-              <div className="flex items-center gap-2 text-white/40 text-sm">
-                <FileText size={14} />
-                {showManual ? "Ocultar transcript manual" : "Vídeo sem legendas? Cole o transcript aqui"}
-              </div>
-              <ChevronDown size={14} className={`text-white/30 transition-transform ${showManual ? "rotate-180" : ""}`} />
+              <span className="text-white/40 text-xs font-medium">⚙ Configurações avançadas</span>
+              <ChevronDown size={13} className={`text-white/30 transition-transform ${showAdvanced ? "rotate-180" : ""}`} />
             </button>
-            {showManual && (
-              <textarea
-                value={manualTranscript}
-                onChange={(e) => setManualTranscript(e.target.value)}
-                placeholder="Cole aqui o texto/transcrição do vídeo..."
-                rows={6}
-                disabled={loading}
-                className="w-full bg-white/3 px-4 py-3 text-sm text-white/70 placeholder-white/20 outline-none resize-none border-t border-white/5"
-              />
+            {showAdvanced && (
+              <div className="space-y-2 p-3 border-t border-white/5">
+                {/* Language */}
+                <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-lg px-3 py-2">
+                  <span className="text-white/30 text-xs">🌐</span>
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    disabled={loading}
+                    className="flex-1 outline-none text-xs cursor-pointer"
+                    style={{ background: "#0a0a0f", color: "rgba(255,255,255,0.7)", colorScheme: "dark" }}
+                  >
+                    <option value="pt-BR">🇧🇷 Português (Brasil)</option>
+                    <option value="en">🇺🇸 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                  </select>
+                </div>
+                {/* Anthropic Key */}
+                <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-lg px-3 py-2">
+                  <Key size={12} className="text-white/30 flex-shrink-0" />
+                  <input
+                    type={showKey ? "text" : "password"}
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="Anthropic API Key (opcional)"
+                    className="flex-1 bg-transparent text-white/70 placeholder-white/20 outline-none text-xs"
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowKey(!showKey)}
+                    className="text-white/20 hover:text-white/50 text-xs transition-colors cursor-pointer"
+                  >
+                    {showKey ? "ocultar" : "mostrar"}
+                  </button>
+                </div>
+              </div>
             )}
           </div>
 
-          {/* Idioma */}
-          <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-xl px-4 py-3">
-            <span className="text-white/30 text-sm flex-shrink-0">🌐 Idioma:</span>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              disabled={loading}
-              className="flex-1 outline-none text-sm cursor-pointer"
-              style={{ background: "#0a0a0f", color: "rgba(255,255,255,0.7)", colorScheme: "dark" }}
-            >
-              <option value="pt-BR">🇧🇷 Português (Brasil)</option>
-              <option value="en">🇺🇸 English</option>
-              <option value="es">🇪🇸 Español</option>
-              <option value="fr">🇫🇷 Français</option>
-              <option value="de">🇩🇪 Deutsch</option>
-              <option value="it">🇮🇹 Italiano</option>
-              <option value="ja">🇯🇵 日本語</option>
-            </select>
-          </div>
-
-          {/* YouTube API Key */}
-          <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-xl px-4 py-3">
-            <span className="text-red-400/60 text-xs flex-shrink-0">▶</span>
-            <input
-              type={showYtKey ? "text" : "password"}
-              value={youtubeKey}
-              onChange={(e) => setYoutubeKey(e.target.value)}
-              placeholder="YouTube Data API Key (opcional — melhora extração)"
-              className="flex-1 bg-transparent text-white/70 placeholder-white/20 outline-none text-xs"
-              disabled={loading}
-            />
-            <button
-              type="button"
-              onClick={() => setShowYtKey(!showYtKey)}
-              className="text-white/20 hover:text-white/50 text-xs transition-colors cursor-pointer"
-            >
-              {showYtKey ? "ocultar" : "mostrar"}
-            </button>
-          </div>
-
-          {/* Anthropic API Key */}
-          <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-xl px-4 py-3">
-            <Key size={14} className="text-white/30 flex-shrink-0" />
-            <input
-              type={showKey ? "text" : "password"}
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Anthropic API Key (opcional)"
-              className="flex-1 bg-transparent text-white/70 placeholder-white/20 outline-none text-xs"
-              disabled={loading}
-            />
-            <button
-              type="button"
-              onClick={() => setShowKey(!showKey)}
-              className="text-white/20 hover:text-white/50 text-xs transition-colors cursor-pointer"
-            >
-              {showKey ? "ocultar" : "mostrar"}
-            </button>
-          </div>
-
+          {/* Loading */}
           {loading && (
             <div className="flex items-center gap-3 px-4 py-3 bg-orange-500/10 border border-orange-500/20 rounded-xl">
               <Loader size={14} className="animate-spin text-orange-400" />
@@ -216,21 +242,35 @@ export default function HomePage() {
             </div>
           )}
 
+          {/* Error */}
           {error && (
             <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
               {error}
             </div>
           )}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="w-full py-4 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer"
+          >
+            {loading
+              ? <><Loader size={18} className="animate-spin" /> Gerando...</>
+              : <>Gerar {GENERATE_MODES[generateMode].icon} {GENERATE_MODES[generateMode].label} <ChevronRight size={18} /></>
+            }
+          </button>
         </form>
 
-        <div className="max-w-2xl w-full mt-16 grid grid-cols-3 gap-4">
+        {/* Features */}
+        <div className="max-w-2xl w-full mt-12 grid grid-cols-3 gap-4">
           {[
-            { icon: BookOpen, title: "Ebook Completo", desc: "Capítulos, pontos-chave e conclusão estruturados pelo Claude" },
-            { icon: Zap, title: "Página de Vendas", desc: "Copy persuasivo com headline, benefícios, FAQ e CTA" },
-            { icon: ShieldCheck, title: "Criativos Meta Ads", desc: "3 formatos prontos: Story, Feed e Carrossel" },
+            { icon: BookOpen, title: "Ebook Completo", desc: "4 capítulos com conteúdo profundo, pontos-chave e conclusão" },
+            { icon: Zap, title: "Página de Vendas", desc: "Copy persuasivo com headline, benefícios, FAQ e CTA pronto" },
+            { icon: Key, title: "Sua API Key", desc: "Use sua própria chave Anthropic — seus dados, seu controle" },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="bg-white/3 border border-white/5 rounded-xl p-4">
-              <Icon size={20} className="text-red-400 mb-3" />
+              <Icon size={18} className="text-red-400 mb-3" />
               <div className="font-semibold text-sm mb-1">{title}</div>
               <div className="text-white/40 text-xs leading-relaxed">{desc}</div>
             </div>
