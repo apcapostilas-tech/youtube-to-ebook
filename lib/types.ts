@@ -40,6 +40,7 @@ export interface ProjectJob {
   language?: string;
   contentType?: "transcript" | "description" | "clone";
   generateMode?: "both" | "ebook" | "sales";
+  salesPageTheme?: "dark" | "light" | "bold";
   ebook?: EbookData;
   salesPage?: SalesPageData;
   checkoutUrl?: string;

@@ -1,12 +1,80 @@
 import { notFound } from "next/navigation";
 import { getJob } from "@/lib/jobs";
 
+function getThemeCSS(theme: string): string {
+  if (theme === "light") return `
+    body{background:#f5f5fa!important;color:#1e1e3f!important}
+    .hero-bg{background:linear-gradient(135deg,#e8eaf6,#fce4ec 35%,#e8f5e9 60%,#e3f2fd)!important;background-size:300% 300%}
+    .hero-grid{background-image:linear-gradient(rgba(99,102,241,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.06) 1px,transparent 1px)!important}
+    .hero-glow{background:radial-gradient(circle,rgba(99,102,241,.15) 0%,transparent 70%)!important}
+    .float-shape.a{background:radial-gradient(circle,#6366f1,transparent)!important}
+    .float-shape.b{background:radial-gradient(circle,#ec4899,transparent)!important}
+    .hero-badge{background:rgba(99,102,241,.1)!important;border-color:rgba(99,102,241,.3)!important;color:#4338ca!important}
+    .hero h1{color:#1e1e3f!important}.hero h1 em{color:#6366f1!important}
+    .hero-sub{color:#4040a0!important}.hero-meta{color:#8080c0!important}
+    .btn-hero,.btn-offer{background:linear-gradient(135deg,#6366f1,#8b5cf6)!important}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,.45)}50%{box-shadow:0 0 0 18px rgba(99,102,241,0)}}
+    .stats-bar{background:#ffffff!important;border-color:#e2e2f0!important}
+    .stat-num{background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;-webkit-background-clip:text!important;background-clip:text!important}
+    .stat-label{color:#8080c0!important}
+    section{background:#f5f5fa!important;border-color:#e2e2f0!important}
+    .tag{color:#6366f1!important}.tag::before{background:#6366f1!important}
+    h2{color:#1e1e3f!important}p.body{color:#4040a0!important}
+    .benefits li{color:#1e1e3f!important;border-color:#e2e2f0!important}
+    .check{background:linear-gradient(135deg,#10b981,#34d399)!important}
+    .prog-track{background:rgba(99,102,241,.1)!important}
+    .prog-fill{background:linear-gradient(90deg,#6366f1,#8b5cf6)!important}
+    .prog-labels{color:#1e1e3f!important}.prog-labels span:last-child{color:#6366f1!important}
+    .review{background:#ffffff!important;border-color:#e2e2f0!important}
+    .review::before{background:linear-gradient(90deg,#6366f1,#8b5cf6)!important}
+    .review-text{color:#4040a0!important}.rev-name{color:#1e1e3f!important}.rev-role{color:#8080c0!important}
+    .avatar{background:linear-gradient(135deg,#6366f1,#8b5cf6)!important}
+    .offer-box{background:#ffffff!important;border-color:#e2e2f0!important}
+    .offer-list li{color:#1e1e3f!important;border-color:#e2e2f0!important}
+    .urgency-box{background:rgba(99,102,241,.08)!important;border-color:rgba(99,102,241,.2)!important;color:#4338ca!important}
+    .faq details{border-color:#e2e2f0!important}.faq details[open]{border-color:rgba(99,102,241,.3)!important}
+    .faq summary{color:#1e1e3f!important}.faq summary::after{color:#6366f1!important}
+    .faq details p{color:#4040a0!important}
+    .final{background:linear-gradient(180deg,transparent,rgba(99,102,241,.05))!important}
+    footer{border-color:#e2e2f0!important;color:#8080c0!important}
+  `;
+  if (theme === "bold") return `
+    body{background:#06030f!important}
+    .hero-bg{background:linear-gradient(135deg,#0a0518,#1a0530 35%,#08031a 60%,#05020f)!important;background-size:300% 300%}
+    .hero-grid{background-image:linear-gradient(rgba(168,85,247,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(168,85,247,.06) 1px,transparent 1px)!important}
+    .hero-glow{background:radial-gradient(circle,rgba(168,85,247,.2) 0%,transparent 70%)!important}
+    .float-shape.a{background:radial-gradient(circle,#a855f7,transparent)!important}
+    .float-shape.b{background:radial-gradient(circle,#ec4899,transparent)!important}
+    .hero-badge{background:rgba(168,85,247,.12)!important;border-color:rgba(168,85,247,.3)!important;color:#d8b4fe!important}
+    .hero h1 em{color:#c084fc!important}
+    .btn-hero,.btn-offer{background:linear-gradient(135deg,#a855f7,#ec4899)!important}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.45)}50%{box-shadow:0 0 0 18px rgba(168,85,247,0)}}
+    .stats-bar{background:#0a0820!important;border-color:#1a1035!important}
+    .stat-num{background:linear-gradient(135deg,#a855f7,#ec4899)!important;-webkit-background-clip:text!important;background-clip:text!important}
+    .tag{color:#c084fc!important}.tag::before{background:#c084fc!important}
+    section{border-color:#100828!important}
+    .review,.offer-box{background:#0a0820!important;border-color:#1a1035!important}
+    .review::before{background:linear-gradient(90deg,#a855f7,#ec4899)!important}
+    .avatar{background:linear-gradient(135deg,#a855f7,#ec4899)!important}
+    .prog-fill{background:linear-gradient(90deg,#a855f7,#ec4899)!important}
+    .prog-labels span:last-child{color:#c084fc!important}
+    .offer-list li{border-color:#1a1035!important}
+    .faq details{border-color:#1a1035!important}.faq details[open]{border-color:rgba(168,85,247,.3)!important}
+    .faq summary::after{color:#c084fc!important}
+    .urgency-box{background:rgba(168,85,247,.08)!important;border-color:rgba(168,85,247,.2)!important;color:#d8b4fe!important}
+    .final{background:linear-gradient(180deg,transparent,rgba(168,85,247,.05))!important}
+    footer{border-color:#1a1035!important}
+  `;
+  return ""; // dark = default, no overrides needed
+}
+
 export default async function SalesPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const job = getJob(id);
   if (!job?.salesPage) notFound();
 
   const { salesPage: s, ebook, checkoutUrl } = job;
+  const theme = job.salesPageTheme || "dark";
   const buyUrl = checkoutUrl || "#comprar";
   const productTitle = ebook?.title || s.headline;
   const productSubtitle = ebook?.subtitle || s.subheadline;
@@ -17,6 +85,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{s.headline}</title>
+        {theme !== "dark" && <style dangerouslySetInnerHTML={{ __html: getThemeCSS(theme) }} />}
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
           *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }

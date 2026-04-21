@@ -6,6 +6,7 @@ import { BookOpen, Zap, Key, Loader, ChevronRight, ChevronDown } from "lucide-re
 
 type ContentType = "transcript" | "description" | "clone";
 type GenerateMode = "both" | "ebook" | "sales";
+type SalesTheme = "dark" | "light" | "bold";
 
 const CONTENT_TYPES: Record<ContentType, { label: string; icon: string; placeholder: string }> = {
   transcript: {
@@ -31,11 +32,18 @@ const GENERATE_MODES: Record<GenerateMode, { label: string; icon: string }> = {
   sales: { label: "Só Página de Vendas", icon: "🛒" },
 };
 
+const SALES_THEMES: Record<SalesTheme, { label: string; icon: string; preview: string }> = {
+  dark: { label: "Dark Moderno", icon: "🌑", preview: "#080810" },
+  light: { label: "Claro Pro", icon: "☀️", preview: "#f5f5fa" },
+  bold: { label: "Bold Impacto", icon: "⚡", preview: "#06030f" },
+};
+
 export default function HomePage() {
   const router = useRouter();
   const [content, setContent] = useState("");
   const [contentType, setContentType] = useState<ContentType>("transcript");
   const [generateMode, setGenerateMode] = useState<GenerateMode>("both");
+  const [salesTheme, setSalesTheme] = useState<SalesTheme>("dark");
   const [language, setLanguage] = useState("pt-BR");
   const [apiKey, setApiKey] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -59,6 +67,7 @@ export default function HomePage() {
           content,
           contentType,
           generateMode,
+          salesPageTheme: salesTheme,
           anthropicKey: apiKey || undefined,
           language,
         }),
@@ -179,6 +188,33 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+
+          {/* Sales Page Theme — only when sales is included */}
+          {generateMode !== "ebook" && (
+            <div className="bg-white/3 border border-white/5 rounded-xl p-3">
+              <p className="text-xs text-white/30 mb-2 font-medium uppercase tracking-wider">Design da página de vendas:</p>
+              <div className="flex gap-2">
+                {(Object.entries(SALES_THEMES) as [SalesTheme, typeof SALES_THEMES[SalesTheme]][]).map(([key, cfg]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setSalesTheme(key)}
+                    className={`flex-1 py-2 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+                      salesTheme === key
+                        ? "bg-white/10 border-white/20 text-white"
+                        : "bg-white/3 border-white/5 text-white/40 hover:text-white/70"
+                    }`}
+                  >
+                    <span
+                      className="inline-block w-3 h-3 rounded-full mr-1.5 align-middle border border-white/20"
+                      style={{ background: cfg.preview }}
+                    />
+                    {cfg.icon} {cfg.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Advanced Settings */}
           <div className="border border-white/5 rounded-xl overflow-hidden">

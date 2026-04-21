@@ -126,16 +126,12 @@ export default async function EbookPage({
           <a className="toc-item" href="#conclusion">
             <span className="toc-num">★</span> Conclusão
           </a>
-          <div className="sidebar-footer">
-            <button className="btn-print" id="btn-print">🖨 Salvar como PDF</button>
-          </div>
+          <div className="sidebar-footer" dangerouslySetInnerHTML={{ __html: '<button class="btn-print" onclick="window.print()">🖨 Salvar como PDF</button>' }} />
         </nav>
 
         <div className="mobile-bar">
           <span className="mobile-title">{ebook.title}</span>
-          <button className="btn-pdf" id="btn-print-mobile" style={{ width: "auto", padding: "8px 14px", fontSize: 12, border: "none" }}>
-            🖨 PDF
-          </button>
+          <span dangerouslySetInnerHTML={{ __html: '<button class="btn-pdf" style="width:auto;padding:8px 14px;font-size:12px;border:none;" onclick="window.print()">🖨 PDF</button>' }} />
         </div>
 
         <main className="main">
@@ -184,8 +180,6 @@ export default async function EbookPage({
         </main>
 
         <script dangerouslySetInnerHTML={{ __html: `
-          document.getElementById('btn-print') && document.getElementById('btn-print').addEventListener('click', function(){ window.print(); });
-          document.getElementById('btn-print-mobile') && document.getElementById('btn-print-mobile').addEventListener('click', function(){ window.print(); });
           ${autoPrint ? "window.addEventListener('load', function(){ setTimeout(function(){ window.print(); }, 800); });" : ""}
 
           var links = document.querySelectorAll('.toc-item');

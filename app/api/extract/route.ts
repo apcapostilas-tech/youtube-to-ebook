@@ -6,7 +6,7 @@ import { ProjectJob } from "@/lib/types";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
-  const { content, contentType, generateMode, anthropicKey, language } = await request.json();
+  const { content, contentType, generateMode, anthropicKey, language, salesPageTheme } = await request.json();
 
   if (!content?.trim()) {
     return NextResponse.json({ success: false, error: "Conteúdo obrigatório" }, { status: 400 });
@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
     transcript: content.trim(),
     contentType: contentType || "transcript",
     generateMode: generateMode || "both",
+    salesPageTheme: salesPageTheme || "dark",
     anthropicKey: anthropicKey || undefined,
     language: language || "pt-BR",
     status: "pending",
