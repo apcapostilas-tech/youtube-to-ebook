@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BookOpen, Zap, Key, Loader, ChevronRight, ChevronDown } from "lucide-react";
 
@@ -46,7 +46,24 @@ export default function HomePage() {
   const [salesTheme, setSalesTheme] = useState<SalesTheme>("dark");
   const [language, setLanguage] = useState("pt-BR");
   const [apiKey, setApiKey] = useState("");
+  const [keySaved, setKeySaved] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("anthropic_key");
+    if (saved) setApiKey(saved);
+  }, []);
+
+  const handleKeyChange = (val: string) => {
+    setApiKey(val);
+    setKeySaved(false);
+    if (val.trim()) {
+      localStorage.setItem("anthropic_key", val.trim());
+      setKeySaved(true);
+    } else {
+      localStorage.removeItem("anthropic_key");
+    }
+  };
   const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -235,11 +252,12 @@ export default function HomePage() {
               <input
                 type={showKey ? "text" : "password"}
                 value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+                onChange={(e) => handleKeyChange(e.target.value)}
                 placeholder="sk-ant-..."
                 className="flex-1 bg-transparent text-white/80 placeholder-white/20 outline-none text-sm"
                 disabled={loading}
               />
+              {keySaved && <span className="text-green-400 text-xs flex-shrink-0">✓ salva</span>}
               <button
                 type="button"
                 onClick={() => setShowKey(!showKey)}
