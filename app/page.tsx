@@ -99,7 +99,7 @@ export default function HomePage() {
     }
   };
 
-  const canSubmit = !loading && content.trim().length > 20;
+  const canSubmit = !loading && content.trim().length > 20 && apiKey.trim().length > 10;
 
   const stepLabel = generateMode === "ebook"
     ? "Gerando ebook com IA..."
@@ -216,6 +216,43 @@ export default function HomePage() {
             </div>
           )}
 
+          {/* Anthropic API Key — obrigatória */}
+          <div className="bg-white/3 border border-white/10 rounded-xl px-4 py-3 focus-within:border-red-500/40 transition-colors">
+            <div className="flex items-center gap-2 mb-2">
+              <Key size={12} className="text-red-400 flex-shrink-0" />
+              <span className="text-xs font-semibold text-white/70">Chave da API Anthropic</span>
+              <span className="text-xs text-red-400 ml-1">obrigatória</span>
+              <a
+                href="https://console.anthropic.com/settings/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-auto text-xs text-orange-400 hover:text-orange-300 underline underline-offset-2 transition-colors"
+              >
+                Criar minha chave →
+              </a>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type={showKey ? "text" : "password"}
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-ant-..."
+                className="flex-1 bg-transparent text-white/80 placeholder-white/20 outline-none text-sm"
+                disabled={loading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowKey(!showKey)}
+                className="text-white/20 hover:text-white/50 text-xs transition-colors cursor-pointer flex-shrink-0"
+              >
+                {showKey ? "ocultar" : "mostrar"}
+              </button>
+            </div>
+            <p className="text-xs text-white/30 mt-1.5">
+              Sua chave fica apenas na sua sessão — nunca armazenamos.
+            </p>
+          </div>
+
           {/* Advanced Settings */}
           <div className="border border-white/5 rounded-xl overflow-hidden">
             <button
@@ -246,25 +283,6 @@ export default function HomePage() {
                     <option value="it">🇮🇹 Italiano</option>
                     <option value="ja">🇯🇵 日本語</option>
                   </select>
-                </div>
-                {/* Anthropic Key */}
-                <div className="flex items-center gap-3 bg-white/3 border border-white/5 rounded-lg px-3 py-2">
-                  <Key size={12} className="text-white/30 flex-shrink-0" />
-                  <input
-                    type={showKey ? "text" : "password"}
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="Anthropic API Key (opcional)"
-                    className="flex-1 bg-transparent text-white/70 placeholder-white/20 outline-none text-xs"
-                    disabled={loading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowKey(!showKey)}
-                    className="text-white/20 hover:text-white/50 text-xs transition-colors cursor-pointer"
-                  >
-                    {showKey ? "ocultar" : "mostrar"}
-                  </button>
                 </div>
               </div>
             )}
@@ -303,7 +321,7 @@ export default function HomePage() {
           {[
             { icon: BookOpen, title: "Ebook Completo", desc: "4 capítulos com conteúdo profundo, pontos-chave e conclusão" },
             { icon: Zap, title: "Página de Vendas", desc: "Copy persuasivo com headline, benefícios, FAQ e CTA pronto" },
-            { icon: Key, title: "Sua API Key", desc: "Use sua própria chave Anthropic — seus dados, seu controle" },
+            { icon: Key, title: "Sua API Key", desc: "Use sua chave Anthropic — os créditos de IA são seus, não cobramos por geração" },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="bg-white/3 border border-white/5 rounded-xl p-4">
               <Icon size={18} className="text-red-400 mb-3" />

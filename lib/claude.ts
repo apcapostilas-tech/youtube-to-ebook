@@ -18,9 +18,8 @@ function parseJsonSafe(text: string): unknown {
 }
 
 function getClient(apiKey?: string) {
-  const key = apiKey || process.env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error("ANTHROPIC_API_KEY não configurada");
-  return new Anthropic({ apiKey: key });
+  if (!apiKey) throw new Error("Chave da API Anthropic não fornecida. Cole sua chave em Configurações.");
+  return new Anthropic({ apiKey });
 }
 
 const LANG_INSTRUCTION: Record<string, string> = {
