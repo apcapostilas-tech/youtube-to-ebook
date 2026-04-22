@@ -12,11 +12,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Conteúdo obrigatório" }, { status: 400 });
   }
 
-  if (!anthropicKey?.trim()) {
-    return NextResponse.json({ success: false, error: "Chave da API Anthropic obrigatória. Crie a sua em console.anthropic.com" }, { status: 400 });
-  }
-
-  const job: ProjectJob = {
+const job: ProjectJob = {
     id: uuidv4(),
     youtubeUrl: "",
     transcript: content.trim(),

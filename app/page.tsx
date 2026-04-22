@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BookOpen, Zap, Key, Loader, ChevronRight, ChevronDown } from "lucide-react";
 
@@ -45,25 +45,7 @@ export default function HomePage() {
   const [generateMode, setGenerateMode] = useState<GenerateMode>("both");
   const [salesTheme, setSalesTheme] = useState<SalesTheme>("dark");
   const [language, setLanguage] = useState("pt-BR");
-  const [apiKey, setApiKey] = useState("");
-  const [keySaved, setKeySaved] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("anthropic_key");
-    if (saved) setApiKey(saved);
-  }, []);
-
-  const handleKeyChange = (val: string) => {
-    setApiKey(val);
-    setKeySaved(false);
-    if (val.trim()) {
-      localStorage.setItem("anthropic_key", val.trim());
-      setKeySaved(true);
-    } else {
-      localStorage.removeItem("anthropic_key");
-    }
-  };
   const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -85,7 +67,6 @@ export default function HomePage() {
           contentType,
           generateMode,
           salesPageTheme: salesTheme,
-          anthropicKey: apiKey || undefined,
           language,
         }),
       });
@@ -116,7 +97,7 @@ export default function HomePage() {
     }
   };
 
-  const canSubmit = !loading && content.trim().length > 20 && apiKey.trim().length > 10;
+  const canSubmit = !loading && content.trim().length > 20;
 
   const stepLabel = generateMode === "ebook"
     ? "Gerando ebook com IA..."
@@ -233,44 +214,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Anthropic API Key — obrigatória */}
-          <div className="bg-white/3 border border-white/10 rounded-xl px-4 py-3 focus-within:border-red-500/40 transition-colors">
-            <div className="flex items-center gap-2 mb-2">
-              <Key size={12} className="text-red-400 flex-shrink-0" />
-              <span className="text-xs font-semibold text-white/70">Chave da API Anthropic</span>
-              <span className="text-xs text-red-400 ml-1">obrigatória</span>
-              <a
-                href="https://console.anthropic.com/settings/keys"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-auto text-xs text-orange-400 hover:text-orange-300 underline underline-offset-2 transition-colors"
-              >
-                Criar minha chave →
-              </a>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type={showKey ? "text" : "password"}
-                value={apiKey}
-                onChange={(e) => handleKeyChange(e.target.value)}
-                placeholder="sk-ant-..."
-                className="flex-1 bg-transparent text-white/80 placeholder-white/20 outline-none text-sm"
-                disabled={loading}
-              />
-              {keySaved && <span className="text-green-400 text-xs flex-shrink-0">✓ salva</span>}
-              <button
-                type="button"
-                onClick={() => setShowKey(!showKey)}
-                className="text-white/20 hover:text-white/50 text-xs transition-colors cursor-pointer flex-shrink-0"
-              >
-                {showKey ? "ocultar" : "mostrar"}
-              </button>
-            </div>
-            <p className="text-xs text-white/30 mt-1.5">
-              Sua chave fica apenas na sua sessão — nunca armazenamos.
-            </p>
-          </div>
-
           {/* Advanced Settings */}
           <div className="border border-white/5 rounded-xl overflow-hidden">
             <button
@@ -339,7 +282,7 @@ export default function HomePage() {
           {[
             { icon: BookOpen, title: "Ebook Completo", desc: "4 capítulos com conteúdo profundo, pontos-chave e conclusão" },
             { icon: Zap, title: "Página de Vendas", desc: "Copy persuasivo com headline, benefícios, FAQ e CTA pronto" },
-            { icon: Key, title: "Sua API Key", desc: "Use sua chave Anthropic — os créditos de IA são seus, não cobramos por geração" },
+            { icon: Key, title: "IA Incluída", desc: "Geração com Claude AI já inclusa — sem precisar de chave de API" },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="bg-white/3 border border-white/5 rounded-xl p-4">
               <Icon size={18} className="text-red-400 mb-3" />
