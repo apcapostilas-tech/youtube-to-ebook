@@ -113,8 +113,8 @@ export default function HomePage() {
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
           <BookOpen size={16} />
         </div>
-        <span className="font-bold text-lg">EbookExpress</span>
-        <span className="text-xs text-white/30 ml-2">Conteúdo → Infoproduto em minutos</span>
+        <span className="font-bold text-lg">Método CCL</span>
+        <span className="text-xs text-white/30 ml-2">Copie, Cole e Lucre</span>
       </header>
 
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-16">
