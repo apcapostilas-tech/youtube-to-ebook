@@ -118,7 +118,7 @@ export default function HomePage() {
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-16">
         <div className="max-w-2xl w-full text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium mb-6">
-            <Zap size={10} /> Powered by Claude AI
+            <Zap size={10} /> Powered by Método CCL
           </div>
           <h1 className="text-4xl font-black mb-3 leading-tight">
             Transforme qualquer conteúdo em<br />
