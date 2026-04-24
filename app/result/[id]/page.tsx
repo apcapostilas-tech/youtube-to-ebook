@@ -11,6 +11,7 @@ export default function ResultPage() {
   const [tab, setTab] = useState<"ebook" | "sales">("ebook");
   const [openChapter, setOpenChapter] = useState<number | null>(0);
   const [checkoutUrl, setCheckoutUrl] = useState("");
+  const [pixelId, setPixelId] = useState("");
   const [savingCheckout, setSavingCheckout] = useState(false);
   const [checkoutSaved, setCheckoutSaved] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -45,6 +46,7 @@ export default function ResultPage() {
       if (d.success) {
         setJob(d.data);
         if (d.data.checkoutUrl) setCheckoutUrl(d.data.checkoutUrl);
+        if (d.data.pixelId) setPixelId(d.data.pixelId);
         // Set default tab based on mode
         if (d.data.generateMode === "sales") setTab("sales");
         else setTab("ebook");
@@ -57,7 +59,7 @@ export default function ResultPage() {
     await fetch("/api/checkout-url", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jobId: id, checkoutUrl }),
+      body: JSON.stringify({ jobId: id, checkoutUrl, pixelId }),
     });
     setSavingCheckout(false);
     setCheckoutSaved(true);
@@ -210,11 +212,20 @@ export default function ResultPage() {
             <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-5">
               <p className="text-xs text-orange-400 uppercase tracking-wider font-semibold mb-3">Link de Checkout</p>
               <p className="text-white/50 text-sm mb-3">Cole o link do seu checkout (Hotmart, Kiwify, etc.) para ativar o botão de compra na página de vendas.</p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 mb-3">
                 <input
                   value={checkoutUrl}
                   onChange={(e) => setCheckoutUrl(e.target.value)}
                   placeholder="https://pay.hotmart.com/..."
+                  className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-orange-500/50"
+                />
+              </div>
+              <p className="text-xs text-white/40 mb-1 font-medium">Pixel do Meta Ads (opcional)</p>
+              <div className="flex gap-2">
+                <input
+                  value={pixelId}
+                  onChange={(e) => setPixelId(e.target.value)}
+                  placeholder="Ex: 1234567890123"
                   className="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-orange-500/50"
                 />
                 <button

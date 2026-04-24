@@ -49,6 +49,7 @@ export interface ProjectJob {
   ebook?: EbookData;
   salesPage?: SalesPageData;
   checkoutUrl?: string;
+  pixelId?: string;
   status: "pending" | "extracting" | "generating" | "done" | "error";
   error?: string;
   createdAt: number;

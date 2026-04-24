@@ -87,7 +87,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
   const job = getJob(id);
   if (!job?.salesPage) notFound();
 
-  const { salesPage: s, ebook, checkoutUrl } = job;
+  const { salesPage: s, ebook, checkoutUrl, pixelId } = job;
   const theme = job.salesPageTheme || "dark";
   const buyUrl = checkoutUrl || "#comprar";
   const productTitle = ebook?.title || s.headline;
@@ -99,6 +99,19 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{s.headline}</title>
+        {pixelId && (
+          <script dangerouslySetInnerHTML={{ __html: `
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init','${pixelId}');fbq('track','PageView');
+          `}} />
+        )}
+        {pixelId && (
+          <noscript dangerouslySetInnerHTML={{ __html: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>` }} />
+        )}
         {theme !== "dark" && <style dangerouslySetInnerHTML={{ __html: getThemeCSS(theme) }} />}
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
