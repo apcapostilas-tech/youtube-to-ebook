@@ -45,7 +45,7 @@ function getThemeCSS(theme: string): string {
     .donut-item-label{color:#8080c0!important}
     .stat{border-color:#e2e2f0!important;background:linear-gradient(135deg,rgba(99,102,241,.03),rgba(99,102,241,.01))!important}
     .stat::before{background:linear-gradient(90deg,transparent,#6366f1,#8b5cf6,transparent)!important}
-    .prog-pct{background:linear-gradient(135deg,#6366f1,#8b5cf6)!important}
+    .prog-pct{background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
     .offer-item-name{color:#1e1e3f!important}
     .offer-item-price{color:#8080c0!important}
     .price-original{color:#8080c0!important}
