@@ -36,7 +36,7 @@ export default function RegisterPage() {
             <BookOpen size={18} />
           </div>
           <h1 className="text-2xl font-black">Criar conta</h1>
-          <p className="text-white/40 text-sm mt-1">Use o email da sua compra</p>
+          <p className="text-orange-400 text-sm font-semibold mt-1">⚠ Use o email da sua compra</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
