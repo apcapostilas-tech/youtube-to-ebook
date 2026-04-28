@@ -96,7 +96,8 @@ Crie 4 capítulos completos com profundidade real.`,
 export async function generateSalesPage(
   ebook: EbookData,
   apiKey?: string,
-  language = "pt-BR"
+  language = "pt-BR",
+  price?: string
 ): Promise<SalesPageData> {
   const client = getClient(apiKey);
   const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
@@ -117,6 +118,7 @@ Título: ${ebook.title}
 Subtítulo: ${ebook.subtitle}
 Descrição: ${ebook.description}
 Capítulos: ${ebook.chapters.map((c) => c.title).join(", ")}
+${price ? `Preço final do produto: R$ ${price} — USE EXATAMENTE ESTE VALOR no campo priceFinal.` : ""}
 
 Retorne JSON (nesta ordem exata):
 {
@@ -160,7 +162,8 @@ export async function generateSalesPageFromText(
   content: string,
   contentType = "transcript",
   apiKey?: string,
-  language = "pt-BR"
+  language = "pt-BR",
+  price?: string
 ): Promise<SalesPageData> {
   const client = getClient(apiKey);
   const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
@@ -179,6 +182,7 @@ Responda APENAS com JSON válido, sem texto antes ou depois.`,
       content: `Crie uma página de vendas de alta conversão baseada neste conteúdo.
 
 Contexto: ${contentCtx}
+${price ? `Preço final do produto: R$ ${price} — USE EXATAMENTE ESTE VALOR no campo priceFinal.` : ""}
 
 Conteúdo:
 ${content.slice(0, 5000)}

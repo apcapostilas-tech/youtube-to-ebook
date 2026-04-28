@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     const lang = job.language || "pt-BR";
     const mode = job.generateMode || "both";
     const contentType = job.contentType || "transcript";
+    const price = job.price;
 
     if (mode === "ebook" || mode === "both") {
       job.ebook = await generateEbook(job.transcript, job.videoTitle || "", apiKey, lang, contentType);
@@ -29,11 +30,10 @@ export async function POST(request: NextRequest) {
 
     if (mode === "sales") {
       // Generate sales page directly from raw content
-      job.salesPage = await generateSalesPageFromText(job.transcript, contentType, apiKey, lang);
+      job.salesPage = await generateSalesPageFromText(job.transcript, contentType, apiKey, lang, price);
       saveJob(job);
     } else if (mode === "both" && job.ebook) {
-      // Generate sales page from ebook
-      job.salesPage = await generateSalesPage(job.ebook, apiKey, lang);
+      job.salesPage = await generateSalesPage(job.ebook, apiKey, lang, price);
       saveJob(job);
     }
 

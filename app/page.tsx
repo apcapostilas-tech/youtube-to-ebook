@@ -45,6 +45,7 @@ export default function HomePage() {
   const [generateMode, setGenerateMode] = useState<GenerateMode>("both");
   const [salesTheme, setSalesTheme] = useState<SalesTheme>("dark");
   const [language, setLanguage] = useState("pt-BR");
+  const [price, setPrice] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -68,6 +69,7 @@ export default function HomePage() {
           generateMode,
           salesPageTheme: salesTheme,
           language,
+          price: price.trim() || undefined,
         }),
       });
       const extractText = await extractRes.text();
@@ -165,6 +167,22 @@ export default function HomePage() {
               {content.length} caracteres {content.length < 20 && content.length > 0 && "— mínimo 20"}
             </div>
           </div>
+
+          {/* Price */}
+          {generateMode !== "ebook" && (
+            <div className="flex items-center gap-3 bg-white/3 border border-white/10 rounded-xl px-4 py-3 focus-within:border-red-500/40 transition-colors">
+              <span className="text-white/40 text-sm font-bold flex-shrink-0">R$</span>
+              <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="Preço do produto (ex: 97)"
+                min="1"
+                disabled={loading}
+                className="flex-1 bg-transparent text-white/80 placeholder-white/20 outline-none text-sm"
+              />
+            </div>
+          )}
 
           {/* Generation Mode */}
           <div className="bg-white/3 border border-white/5 rounded-xl p-3">

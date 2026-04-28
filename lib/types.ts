@@ -50,6 +50,7 @@ export interface ProjectJob {
   salesPage?: SalesPageData;
   checkoutUrl?: string;
   pixelId?: string;
+  price?: string;
   status: "pending" | "extracting" | "generating" | "done" | "error";
   error?: string;
   createdAt: number;
