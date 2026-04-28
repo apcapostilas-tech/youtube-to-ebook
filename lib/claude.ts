@@ -129,8 +129,8 @@ Retorne JSON (nesta ordem exata):
     {"name": "🎯 Bônus ou recurso extra 1", "price": "R$ 297"},
     {"name": "📋 Bônus ou recurso extra 2", "price": "R$ 197"}
   ],
-  "priceOriginal": "R$ 991",
-  "priceFinal": "R$ 47",
+  "priceOriginal": "preço original — soma dos itens acima (ex: R$ 991)",
+  "priceFinal": "preço promocional coerente com o nicho e produto (ex: R$ 97, R$ 197, R$ 297 — NÃO use R$ 47 a menos que o conteúdo indique esse valor)",
   "guarantee": "garantia de 30 dias — 1 frase direta",
   "stats": [
     {"num": 4500, "label": "emoji + métrica relevante ao nicho"},
@@ -194,8 +194,8 @@ Retorne JSON (nesta ordem exata):
     {"name": "🎯 Bônus ou recurso extra 1", "price": "R$ 297"},
     {"name": "📋 Bônus ou recurso extra 2", "price": "R$ 197"}
   ],
-  "priceOriginal": "R$ 991",
-  "priceFinal": "R$ 47",
+  "priceOriginal": "preço original — soma dos itens acima (ex: R$ 991)",
+  "priceFinal": "preço promocional coerente com o nicho e produto (ex: R$ 97, R$ 197, R$ 297 — NÃO use R$ 47 a menos que o conteúdo indique esse valor)",
   "guarantee": "garantia de 30 dias — 1 frase direta",
   "stats": [
     {"num": 4500, "label": "emoji + métrica relevante ao nicho"},
