@@ -51,6 +51,7 @@ export interface ProjectJob {
   checkoutUrl?: string;
   pixelId?: string;
   price?: string;
+  priceOriginal?: string;
   status: "pending" | "extracting" | "generating" | "done" | "error";
   error?: string;
   createdAt: number;

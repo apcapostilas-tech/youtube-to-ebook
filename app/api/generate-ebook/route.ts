@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
     const mode = job.generateMode || "both";
     const contentType = job.contentType || "transcript";
     const price = job.price;
+    const priceOriginal = job.priceOriginal;
 
     if (mode === "ebook" || mode === "both") {
       job.ebook = await generateEbook(job.transcript, job.videoTitle || "", apiKey, lang, contentType);
@@ -30,10 +31,10 @@ export async function POST(request: NextRequest) {
 
     if (mode === "sales") {
       // Generate sales page directly from raw content
-      job.salesPage = await generateSalesPageFromText(job.transcript, contentType, apiKey, lang, price);
+      job.salesPage = await generateSalesPageFromText(job.transcript, contentType, apiKey, lang, price, priceOriginal);
       saveJob(job);
     } else if (mode === "both" && job.ebook) {
-      job.salesPage = await generateSalesPage(job.ebook, apiKey, lang, price);
+      job.salesPage = await generateSalesPage(job.ebook, apiKey, lang, price, priceOriginal);
       saveJob(job);
     }
 

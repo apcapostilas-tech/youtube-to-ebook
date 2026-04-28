@@ -46,6 +46,7 @@ export default function HomePage() {
   const [salesTheme, setSalesTheme] = useState<SalesTheme>("dark");
   const [language, setLanguage] = useState("pt-BR");
   const [price, setPrice] = useState("");
+  const [priceOriginal, setPriceOriginal] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -70,6 +71,7 @@ export default function HomePage() {
           salesPageTheme: salesTheme,
           language,
           price: price.trim() || undefined,
+          priceOriginal: priceOriginal.trim() || undefined,
         }),
       });
       const extractText = await extractRes.text();
@@ -170,16 +172,29 @@ export default function HomePage() {
 
           {/* Price */}
           {generateMode !== "ebook" && (
-            <div className="flex items-center gap-3 bg-white/3 border border-white/10 rounded-xl px-4 py-3 focus-within:border-red-500/40 transition-colors">
-              <span className="text-white/40 text-sm font-bold flex-shrink-0">$</span>
-              <input
-                type="text"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="Preço do produto (ex: 47 ou 9,90)"
-                disabled={loading}
-                className="flex-1 bg-transparent text-white/80 placeholder-white/20 outline-none text-sm"
-              />
+            <div className="flex gap-2">
+              <div className="flex items-center gap-2 flex-1 bg-white/3 border border-white/10 rounded-xl px-4 py-3 focus-within:border-red-500/40 transition-colors">
+                <span className="text-white/30 text-xs font-semibold flex-shrink-0">DE $</span>
+                <input
+                  type="text"
+                  value={priceOriginal}
+                  onChange={(e) => setPriceOriginal(e.target.value)}
+                  placeholder="197"
+                  disabled={loading}
+                  className="flex-1 bg-transparent text-white/50 placeholder-white/20 outline-none text-sm"
+                />
+              </div>
+              <div className="flex items-center gap-2 flex-1 bg-white/3 border border-white/10 rounded-xl px-4 py-3 focus-within:border-red-500/40 transition-colors">
+                <span className="text-white/30 text-xs font-semibold flex-shrink-0">POR $</span>
+                <input
+                  type="text"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="47"
+                  disabled={loading}
+                  className="flex-1 bg-transparent text-white/80 placeholder-white/20 outline-none text-sm"
+                />
+              </div>
             </div>
           )}
 

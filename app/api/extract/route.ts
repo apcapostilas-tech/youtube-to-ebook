@@ -6,7 +6,7 @@ import { ProjectJob } from "@/lib/types";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
-  const { content, contentType, generateMode, anthropicKey, language, salesPageTheme, price } = await request.json();
+  const { content, contentType, generateMode, anthropicKey, language, salesPageTheme, price, priceOriginal } = await request.json();
 
   if (!content?.trim()) {
     return NextResponse.json({ success: false, error: "Conteúdo obrigatório" }, { status: 400 });
@@ -22,6 +22,7 @@ const job: ProjectJob = {
     anthropicKey: anthropicKey || undefined,
     language: language || "pt-BR",
     price: price || undefined,
+    priceOriginal: priceOriginal || undefined,
     status: "pending",
     createdAt: Date.now(),
   };
