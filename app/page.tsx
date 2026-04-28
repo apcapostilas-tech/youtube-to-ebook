@@ -171,13 +171,12 @@ export default function HomePage() {
           {/* Price */}
           {generateMode !== "ebook" && (
             <div className="flex items-center gap-3 bg-white/3 border border-white/10 rounded-xl px-4 py-3 focus-within:border-red-500/40 transition-colors">
-              <span className="text-white/40 text-sm font-bold flex-shrink-0">R$</span>
+              <span className="text-white/40 text-sm font-bold flex-shrink-0">$</span>
               <input
-                type="number"
+                type="text"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder="Preço do produto (ex: 97)"
-                min="1"
+                placeholder="Preço do produto (ex: 47 ou 9,90)"
                 disabled={loading}
                 className="flex-1 bg-transparent text-white/80 placeholder-white/20 outline-none text-sm"
               />
