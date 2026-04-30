@@ -33,6 +33,16 @@ const LANG_INSTRUCTION: Record<string, string> = {
   "ja": "すべてのコンテンツを日本語で書いてください。",
 };
 
+const CURRENCY: Record<string, string> = {
+  "pt-BR": "R$",
+  "en": "$",
+  "es": "$",
+  "fr": "€",
+  "de": "€",
+  "it": "€",
+  "ja": "¥",
+};
+
 const CONTENT_TYPE_CONTEXT: Record<string, string> = {
   transcript: "Esta é uma transcrição de vídeo. Extraia os melhores insights, ensinamentos práticos e conhecimentos do conteúdo.",
   description: "Esta é uma descrição de produto, serviço ou curso. Use estas informações para criar conteúdo educativo e persuasivo.",
@@ -102,6 +112,7 @@ export async function generateSalesPage(
 ): Promise<SalesPageData> {
   const client = getClient(apiKey);
   const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
+  const currency = CURRENCY[language] || "R$";
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
@@ -130,25 +141,25 @@ Retorne JSON (nesta ordem exata):
   "cta": "texto do botão de compra (máx 6 palavras)",
   "urgency": "elemento de urgência ou escassez (1 frase)",
   "offerItems": [
-    {"name": "📦 Item principal do produto", "price": "R$ 497"},
-    {"name": "🎯 Bônus ou recurso extra 1", "price": "R$ 297"},
-    {"name": "📋 Bônus ou recurso extra 2", "price": "R$ 197"}
+    {"name": "📦 main product item", "price": "${currency} 497"},
+    {"name": "🎯 bonus item 1", "price": "${currency} 297"},
+    {"name": "📋 bonus item 2", "price": "${currency} 197"}
   ],
-  "priceOriginal": "preço original — soma dos itens acima (ex: R$ 991)",
-  "priceFinal": "preço promocional coerente com o nicho e produto (ex: R$ 97, R$ 197, R$ 297 — NÃO use R$ 47 a menos que o conteúdo indique esse valor)",
-  "guarantee": "garantia de 30 dias — 1 frase direta",
+  "priceOriginal": "sum of items above (ex: ${currency} 991)",
+  "priceFinal": "promotional price (ex: ${currency} 97, ${currency} 197, ${currency} 297)",
+  "guarantee": "30-day guarantee — 1 direct sentence",
   "stats": [
-    {"num": 4500, "label": "emoji + métrica relevante ao nicho"},
-    {"num": 96, "label": "% de resultado relevante"},
-    {"num": 30, "label": "número + unidade relevante"}
+    {"num": 4500, "label": "emoji + relevant metric"},
+    {"num": 96, "label": "% relevant result"},
+    {"num": 30, "label": "number + relevant unit"}
   ],
-  "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
+  "benefits": ["benefit 1", "benefit 2", "benefit 3", "benefit 4", "benefit 5"],
   "faq": [
-    {"question": "pergunta 1", "answer": "resposta direta"},
-    {"question": "pergunta 2", "answer": "resposta direta"},
-    {"question": "pergunta 3", "answer": "resposta direta"}
+    {"question": "question 1", "answer": "direct answer"},
+    {"question": "question 2", "answer": "direct answer"},
+    {"question": "question 3", "answer": "direct answer"}
   ],
-  "offer": "frase curta de apresentação da oferta (1 linha)",
+  "offer": "short offer presentation line",
   "problemSection": "seção que descreve a dor (2 parágrafos separados por \\n)",
   "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
   "socialProof": "seção de prova social/credibilidade (1 parágrafo)"
@@ -174,6 +185,7 @@ export async function generateSalesPageFromText(
   const client = getClient(apiKey);
   const langInstr = LANG_INSTRUCTION[language] || LANG_INSTRUCTION["pt-BR"];
   const contentCtx = CONTENT_TYPE_CONTEXT[contentType] || CONTENT_TYPE_CONTEXT.transcript;
+  const currency = CURRENCY[language] || "R$";
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
@@ -202,25 +214,25 @@ Retorne JSON (nesta ordem exata):
   "cta": "texto do botão de compra (máx 6 palavras)",
   "urgency": "elemento de urgência ou escassez (1 frase)",
   "offerItems": [
-    {"name": "📦 Item principal do produto", "price": "R$ 497"},
-    {"name": "🎯 Bônus ou recurso extra 1", "price": "R$ 297"},
-    {"name": "📋 Bônus ou recurso extra 2", "price": "R$ 197"}
+    {"name": "📦 main product item", "price": "${currency} 497"},
+    {"name": "🎯 bonus item 1", "price": "${currency} 297"},
+    {"name": "📋 bonus item 2", "price": "${currency} 197"}
   ],
-  "priceOriginal": "preço original — soma dos itens acima (ex: R$ 991)",
-  "priceFinal": "preço promocional coerente com o nicho e produto (ex: R$ 97, R$ 197, R$ 297 — NÃO use R$ 47 a menos que o conteúdo indique esse valor)",
-  "guarantee": "garantia de 30 dias — 1 frase direta",
+  "priceOriginal": "sum of items above (ex: ${currency} 991)",
+  "priceFinal": "promotional price (ex: ${currency} 97, ${currency} 197, ${currency} 297)",
+  "guarantee": "30-day guarantee — 1 direct sentence",
   "stats": [
-    {"num": 4500, "label": "emoji + métrica relevante ao nicho"},
-    {"num": 96, "label": "% de resultado relevante"},
-    {"num": 30, "label": "número + unidade relevante"}
+    {"num": 4500, "label": "emoji + relevant metric"},
+    {"num": 96, "label": "% relevant result"},
+    {"num": 30, "label": "number + relevant unit"}
   ],
-  "benefits": ["benefício 1", "benefício 2", "benefício 3", "benefício 4", "benefício 5"],
+  "benefits": ["benefit 1", "benefit 2", "benefit 3", "benefit 4", "benefit 5"],
   "faq": [
-    {"question": "pergunta 1", "answer": "resposta direta"},
-    {"question": "pergunta 2", "answer": "resposta direta"},
-    {"question": "pergunta 3", "answer": "resposta direta"}
+    {"question": "question 1", "answer": "direct answer"},
+    {"question": "question 2", "answer": "direct answer"},
+    {"question": "question 3", "answer": "direct answer"}
   ],
-  "offer": "frase curta de apresentação da oferta (1 linha)",
+  "offer": "short offer presentation line",
   "problemSection": "seção que descreve a dor (2 parágrafos separados por \\n)",
   "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
   "socialProof": "seção de prova social/credibilidade (1 parágrafo)"
