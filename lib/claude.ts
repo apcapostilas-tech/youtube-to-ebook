@@ -153,7 +153,9 @@ Retorne JSON (nesta ordem exata):
   "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
   "socialProof": "seção de prova social/credibilidade (1 parágrafo)"
 }
-Stats.num = inteiros plausíveis para o nicho. OfferItems = 3-5 itens com preços em R$. PriceOriginal = soma dos itens, priceFinal = preço real (bem menor).`,
+Stats.num = inteiros plausíveis para o nicho. OfferItems = 3-5 itens com preços em R$. PriceOriginal = soma dos itens, priceFinal = preço real (bem menor).
+
+⚠️ FINAL LANGUAGE CHECK: ${langInstr} Every single value in the JSON above — headline, subheadline, cta, urgency, offer, guarantee, benefits, faq, problemSection, solutionSection, socialProof, offerItems names, stats labels — must be written EXCLUSIVELY in the required language. Zero exceptions.`,
     }],
   });
 
@@ -223,7 +225,9 @@ Retorne JSON (nesta ordem exata):
   "solutionSection": "seção que apresenta a solução (2 parágrafos separados por \\n)",
   "socialProof": "seção de prova social/credibilidade (1 parágrafo)"
 }
-Stats.num = inteiros plausíveis para o nicho. OfferItems = 3-5 itens com preços em R$. PriceOriginal = soma dos itens, priceFinal = preço real (bem menor).`,
+Stats.num = inteiros plausíveis para o nicho. OfferItems = 3-5 itens com preços em R$. PriceOriginal = soma dos itens, priceFinal = preço real (bem menor).
+
+⚠️ FINAL LANGUAGE CHECK: ${langInstr} Every single value in the JSON above — headline, subheadline, cta, urgency, offer, guarantee, benefits, faq, problemSection, solutionSection, socialProof, offerItems names, stats labels — must be written EXCLUSIVELY in the required language. Zero exceptions.`,
     }],
   });
 
