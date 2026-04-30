@@ -110,6 +110,7 @@ export async function generateSalesPage(
 Use os frameworks: PAS (Problema-Agitação-Solução), AIDA e prova social.
 Escreva copy direto, específico e que gere urgência real. Sem clichês.
 ${langInstr}
+CRITICAL: Every single text value in the JSON output MUST be written in the language specified above. Section titles, benefits, FAQ, CTAs, guarantees — ALL in the same language. Do NOT mix languages.
 Responda APENAS com JSON válido, sem texto antes ou depois.`,
     messages: [{
       role: "user",
@@ -179,6 +180,7 @@ export async function generateSalesPageFromText(
 Use os frameworks: PAS (Problema-Agitação-Solução), AIDA e prova social.
 Escreva copy direto, específico e que gere urgência real. Sem clichês.
 ${langInstr}
+CRITICAL: Every single text value in the JSON output MUST be written in the language specified above. Section titles, benefits, FAQ, CTAs, guarantees — ALL in the same language. Do NOT mix languages.
 Responda APENAS com JSON válido, sem texto antes ou depois.`,
     messages: [{
       role: "user",
