@@ -82,6 +82,104 @@ function getThemeCSS(theme: string): string {
   return ""; // dark = default, no overrides needed
 }
 
+function getT(lang: string) {
+  const t: Record<string, Record<string, string>> = {
+    "en": {
+      badge: "⚡ Digital Product · Instant Access",
+      metaSecurity: "🔒 Secure payment · Instant access · No subscription",
+      tagProblem: "The Problem", h2Problem: "Have you been through this?",
+      tagSolution: "The Solution",
+      tagBenefits: "What you'll learn", h2Benefits: "Everything that's included",
+      prog1: "🎯 Clarity and direction", prog2: "⚡ Practical application", prog3: "📈 Real results", prog4: "🔥 Confidence to act",
+      tagProof: "Proven results", h2Proof: "The numbers don't lie",
+      tagReviews: "Who already read it", h2Reviews: "What readers are saying",
+      rev1t: `"Exactly what I needed. Straight to the point, no fluff. Applied it the very next day."`,
+      rev1n: "Marcus V.", rev1r: "Entrepreneur",
+      rev2t: `"Completely changed my perspective. I recommend it to anyone who wants real results."`,
+      rev2n: "Anna P.", rev2r: "Freelancer",
+      rev3t: `"Best investment I made this year. Worth way more than the price."`,
+      rev3n: "Rafael S.", rev3r: "Professional",
+      tagOffer: "Special Offer",
+      priceFrom: "From ",
+      priceBadge: "🔥 Special offer",
+      securityBar: "🔒 100% secure payment · 📥 Instant access · ✉️ Support included",
+      tagFaq: "Questions", h2Faq: "Frequently asked questions",
+      h2Final: "Ready to get started?",
+      footer: "All rights reserved",
+    },
+    "es": {
+      badge: "⚡ Producto Digital · Acceso Inmediato",
+      metaSecurity: "🔒 Pago seguro · Acceso inmediato · Sin mensualidad",
+      tagProblem: "El Problema", h2Problem: "¿Has pasado por esto?",
+      tagSolution: "La Solución",
+      tagBenefits: "Lo que aprenderás", h2Benefits: "Todo lo que está incluido",
+      prog1: "🎯 Claridad y dirección", prog2: "⚡ Aplicación práctica", prog3: "📈 Resultados reales", prog4: "🔥 Confianza para actuar",
+      tagProof: "Resultados comprobados", h2Proof: "Los números no mienten",
+      tagReviews: "Quienes ya leyeron", h2Reviews: "Lo que dicen los lectores",
+      rev1t: `"Exactamente lo que necesitaba. Contenido directo, sin rodeos. Lo apliqué al día siguiente."`,
+      rev1n: "Marcos V.", rev1r: "Emprendedor",
+      rev2t: `"Cambió completamente mi perspectiva. Lo recomiendo a cualquiera que quiera resultados reales."`,
+      rev2n: "Ana P.", rev2r: "Freelancer",
+      rev3t: `"La mejor inversión que hice este año. Vale mucho más que el precio."`,
+      rev3n: "Rafael S.", rev3r: "Profesional",
+      tagOffer: "Oferta Especial",
+      priceFrom: "De ",
+      priceBadge: "🔥 Oferta especial",
+      securityBar: "🔒 Pago 100% seguro · 📥 Acceso inmediato · ✉️ Soporte incluido",
+      tagFaq: "Dudas", h2Faq: "Preguntas frecuentes",
+      h2Final: "¿Listo para comenzar?",
+      footer: "Todos los derechos reservados",
+    },
+    "fr": {
+      badge: "⚡ Produit Numérique · Accès Immédiat",
+      metaSecurity: "🔒 Paiement sécurisé · Accès immédiat · Sans abonnement",
+      tagProblem: "Le Problème", h2Problem: "Avez-vous vécu cela ?",
+      tagSolution: "La Solution",
+      tagBenefits: "Ce que vous apprendrez", h2Benefits: "Tout ce qui est inclus",
+      prog1: "🎯 Clarté et direction", prog2: "⚡ Application pratique", prog3: "📈 Résultats réels", prog4: "🔥 Confiance pour agir",
+      tagProof: "Résultats prouvés", h2Proof: "Les chiffres ne mentent pas",
+      tagReviews: "Qui a déjà lu", h2Reviews: "Ce que disent les lecteurs",
+      rev1t: `"Exactement ce dont j'avais besoin. Contenu direct, sans détours. Appliqué le lendemain."`,
+      rev1n: "Marc V.", rev1r: "Entrepreneur",
+      rev2t: `"A complètement changé ma perspective. Je le recommande à quiconque veut de vrais résultats."`,
+      rev2n: "Anne P.", rev2r: "Freelance",
+      rev3t: `"Meilleur investissement de l'année. Vaut bien plus que le prix."`,
+      rev3n: "Raphaël S.", rev3r: "Professionnel",
+      tagOffer: "Offre Spéciale",
+      priceFrom: "De ",
+      priceBadge: "🔥 Offre spéciale",
+      securityBar: "🔒 Paiement 100% sécurisé · 📥 Accès immédiat · ✉️ Support inclus",
+      tagFaq: "Questions", h2Faq: "Questions fréquentes",
+      h2Final: "Prêt à commencer ?",
+      footer: "Tous droits réservés",
+    },
+    "pt-BR": {
+      badge: "⚡ Produto Digital · Acesso Imediato",
+      metaSecurity: "🔒 Pagamento seguro · Acesso imediato · Sem mensalidade",
+      tagProblem: "O Problema", h2Problem: "Você já passou por isso?",
+      tagSolution: "A Solução",
+      tagBenefits: "O que você vai aprender", h2Benefits: "Tudo que está incluso",
+      prog1: "🎯 Clareza e direção", prog2: "⚡ Aplicação prática", prog3: "📈 Resultados reais", prog4: "🔥 Confiança para agir",
+      tagProof: "Resultados comprovados", h2Proof: "Os números não mentem",
+      tagReviews: "Quem já leu", h2Reviews: "O que os leitores dizem",
+      rev1t: `"Exatamente o que eu precisava. Conteúdo direto, sem enrolação. Apliquei no dia seguinte."`,
+      rev1n: "Marcos V.", rev1r: "Empreendedor",
+      rev2t: `"Mudou completamente minha perspectiva. Recomendo para qualquer um que queira resultados reais."`,
+      rev2n: "Ana Paula", rev2r: "Freelancer",
+      rev3t: `"Melhor investimento que fiz este ano. Vale muito mais do que o preço."`,
+      rev3n: "Rafael S.", rev3r: "Profissional",
+      tagOffer: "Oferta Especial",
+      priceFrom: "De ",
+      priceBadge: "🔥 Oferta especial",
+      securityBar: "🔒 Pagamento 100% seguro · 📥 Acesso imediato · ✉️ Suporte incluso",
+      tagFaq: "Dúvidas", h2Faq: "Perguntas frequentes",
+      h2Final: "Pronto para começar?",
+      footer: "Todos os direitos reservados",
+    },
+  };
+  return t[lang] || t["pt-BR"];
+}
+
 export default async function SalesPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const job = getJob(id);
@@ -92,6 +190,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
   const buyUrl = checkoutUrl || "#comprar";
   const productTitle = ebook?.title || s.headline;
   const productSubtitle = ebook?.subtitle || s.subheadline;
+  const t = getT(job.language || "pt-BR");
 
   return (
     <html lang="pt-BR">
@@ -392,7 +491,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           <div className="float-shape a" />
           <div className="float-shape b" />
           <div className="hero-content">
-            <div className="hero-badge">⚡ Produto Digital · Acesso Imediato</div>
+            <div className="hero-badge">{t.badge}</div>
             <h1>{s.headline.includes(":") || s.headline.includes("—")
               ? <>{s.headline.split(/(:| —|–)/)[0]} <em>{s.headline.split(/(:| —|–)/).slice(1).join("")}</em></>
               : s.headline
@@ -400,7 +499,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
             <p className="hero-sub">{s.subheadline}</p>
             <div>
               <a href={buyUrl} className="btn-hero">{s.cta} →</a>
-              <p className="hero-meta">🔒 Pagamento seguro · Acesso imediato · Sem mensalidade</p>
+              <p className="hero-meta">{t.metaSecurity}</p>
             </div>
           </div>
         </div>
@@ -425,8 +524,8 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         {/* PROBLEMA */}
         <section>
           <div className="container">
-            <div className="tag">O Problema</div>
-            <h2>Você já passou por isso?</h2>
+            <div className="tag">{t.tagProblem}</div>
+            <h2>{t.h2Problem}</h2>
             {s.problemSection.split("\n").filter(Boolean).map((p, i) => (
               <p className="body" key={i}>{p}</p>
             ))}
@@ -436,7 +535,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         {/* SOLUÇÃO */}
         <section>
           <div className="container">
-            <div className="tag">A Solução</div>
+            <div className="tag">{t.tagSolution}</div>
             <h2>{productTitle}</h2>
             <p style={{ fontStyle:"italic", fontSize:"1.05rem", color:"#c0c0d8", marginBottom:20 }}>{productSubtitle}</p>
             {s.solutionSection.split("\n").filter(Boolean).map((p, i) => (
@@ -453,8 +552,8 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         {/* BENEFÍCIOS */}
         <section>
           <div className="container">
-            <div className="tag">O que você vai aprender</div>
-            <h2>Tudo que está incluso</h2>
+            <div className="tag">{t.tagBenefits}</div>
+            <h2>{t.h2Benefits}</h2>
             <ul className="benefits">
               {s.benefits.map((b, i) => (
                 <li key={i}><span className="check">✓</span>{b}</li>
@@ -462,10 +561,10 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
             </ul>
             <div className="prog-list">
               {[
-                ["🎯 Clareza e direção", 88],
-                ["⚡ Aplicação prática", 93],
-                ["📈 Resultados reais", 85],
-                ["🔥 Confiança para agir", 96],
+                [t.prog1, 88],
+                [t.prog2, 93],
+                [t.prog3, 85],
+                [t.prog4, 96],
               ].map(([label, pct], i) => (
                 <div className="prog-item" key={i}>
                   <div className="prog-labels">
@@ -493,8 +592,8 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
           return (
             <section className="donut-section">
               <div className="container">
-                <div className="tag">Resultados comprovados</div>
-                <h2>Os números não mentem</h2>
+                <div className="tag">{t.tagProof}</div>
+                <h2>{t.h2Proof}</h2>
                 <div className="donut-wrap" style={{ marginTop: 40 }}>
                   <div className="donut-chart">
                     <svg viewBox="0 0 200 200" width="220" height="220">
@@ -538,17 +637,17 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         {/* PROVA SOCIAL */}
         <section>
           <div className="container">
-            <div className="tag">Quem já leu</div>
-            <h2>O que os leitores dizem</h2>
+            <div className="tag">{t.tagReviews}</div>
+            <h2>{t.h2Reviews}</h2>
             <div className="reviews">
               {[
-                { i:"M", n:"Marcos V.", r:"Empreendedor", t:`"Exatamente o que eu precisava. Conteúdo direto, sem enrolação. Apliquei no dia seguinte."` },
-                { i:"A", n:"Ana Paula", r:"Freelancer", t:`"Mudou completamente minha perspectiva. Recomendo para qualquer um que queira resultados reais."` },
-                { i:"R", n:"Rafael S.", r:"Profissional", t:`"Melhor investimento que fiz este ano. Vale muito mais do que o preço."` },
+                { i:"M", n:t.rev1n, r:t.rev1r, tx:t.rev1t },
+                { i:"A", n:t.rev2n, r:t.rev2r, tx:t.rev2t },
+                { i:"R", n:t.rev3n, r:t.rev3r, tx:t.rev3t },
               ].map((rv, i) => (
                 <div className="review" key={i}>
                   <div className="stars">★★★★★</div>
-                  <p className="review-text">{rv.t}</p>
+                  <p className="review-text">{rv.tx}</p>
                   <div className="reviewer">
                     <div className="avatar">{rv.i}</div>
                     <div><div className="rev-name">{rv.n}</div><div className="rev-role">{rv.r}</div></div>
@@ -562,7 +661,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         {/* OFERTA */}
         <section id="comprar">
           <div className="container">
-            <div className="tag">Oferta Especial</div>
+            <div className="tag">{t.tagOffer}</div>
             <div className="offer-box">
               {/* só mostra o parágrafo se não tiver itens estruturados */}
               {(!s.offerItems || s.offerItems.length === 0) && (
@@ -595,10 +694,10 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
               {s.priceFinal && /\d/.test(s.priceFinal) && (
                 <div className="price-block">
                   {s.priceOriginal && /\d/.test(s.priceOriginal) && (
-                    <span className="price-original">De {s.priceOriginal}</span>
+                    <span className="price-original">{t.priceFrom}{s.priceOriginal}</span>
                   )}
                   <div className="price-final-wrap">
-                    <span className="price-badge">🔥 Oferta especial</span>
+                    <span className="price-badge">{t.priceBadge}</span>
                     <span className="price-final">{s.priceFinal}</span>
                   </div>
                 </div>
@@ -614,9 +713,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
 
               <div className="urgency-box">⏰ {s.urgency}</div>
               <a href={buyUrl} className="btn-offer">{s.cta} →</a>
-              <p style={{ fontSize:12, color:"#3a3a5a", marginTop:16 }}>
-                🔒 Pagamento 100% seguro · 📥 Acesso imediato · ✉️ Suporte incluso
-              </p>
+              <p style={{ fontSize:12, color:"#3a3a5a", marginTop:16 }}>{t.securityBar}</p>
             </div>
           </div>
         </section>
@@ -624,8 +721,8 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         {/* FAQ */}
         <section>
           <div className="container">
-            <div className="tag">Dúvidas</div>
-            <h2>Perguntas frequentes</h2>
+            <div className="tag">{t.tagFaq}</div>
+            <h2>{t.h2Faq}</h2>
             <div className="faq">
               {s.faq.map((item, i) => (
                 <details key={i}>
@@ -640,7 +737,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         {/* FINAL CTA */}
         <div className="final">
           <div className="container">
-            <h2>Pronto para começar?</h2>
+            <h2>{t.h2Final}</h2>
             <p className="body" style={{ maxWidth:460, margin:"0 auto 36px" }}>
               {ebook?.callToAction || s.subheadline}
             </p>
@@ -649,7 +746,7 @@ export default async function SalesPage({ params }: { params: Promise<{ id: stri
         </div>
 
         <footer>
-          <p>© {new Date().getFullYear()} · {productTitle} · Todos os direitos reservados</p>
+          <p>© {new Date().getFullYear()} · {productTitle} · {t.footer}</p>
         </footer>
 
         <script dangerouslySetInnerHTML={{ __html: `
